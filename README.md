@@ -2,17 +2,17 @@
 Database project built with Flask and PostgreSQL for hy-tsoha.
 
 ## Description
-- Twitter like feed where posts are quizes
+- Twitter like feed where posts are quizzes
 - A quiz consists of questions and multiple answers to choose from
 - After the quiz is over, the user can rate the quiz and is rewarded points based on the speed and accuracy
-- All the users can create and take part in quizes
-- Admins can remove quizes and users
+- All the users can create and take part in quizzes
+- Admins can remove quizzes and users
 
 ## Views
 **Bolded** tasks are main features.
 
 ### Feed
-- [ ] **Display quizes in creation order**
+- [ ] **Display quizzes in creation order**
 - [ ] **Open quiz on click**
 - [ ] **Create quiz button**
 - [ ] Add sorting
@@ -25,6 +25,7 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 - [ ] **Reward points after completion**
 - [ ] **Rate quiz**
 - [ ] **Add comments**
+- [ ] Correct/Incorrect answers per question
 
 ### Create user
 - [ ] **Form with username and password fields**
@@ -50,9 +51,12 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 ## Database Tables
 | Name | Data |
 | - | - |
-| Users | id SERIAL PRIMARY KEY, username TEXT, password TEXT, points NUMBER, admin BOOL |
-| Quizes | id SERIAL PRIMARY KEY, creator_id INTEGER, title TEXT, question_ids INTEGER ARRAY, date TIMESTAMP, upvotes INTEGER, downvotes INTEGER |
-| Questions | id SERIAL PRIMARY KEY, question TEXT, correct BOOL |
-| Comments | id SERIAL PRIMARY KEY, quiz_id INTEGER, user_id INTEGER, message TEXT, creation date TIMESTAMP |
-| Scores | id SERIAL PRIMARY KEY, user_id INTEGER, score INTEGER
-| Log | id SERIAL PRIMARY KEY, user_id INTEGER, action TEXT
+| Users | user_id SERIAL PRIMARY KEY, username TEXT, password TEXT, admin BOOL |
+| Quizzes | quiz_id SERIAL PRIMARY KEY, creator_id INTEGER, title TEXT,  date TIMESTAMP, upvotes INTEGER, downvotes INTEGER |
+| Questions | question_id SERIAL PRIMARY KEY, quiz_id INTEGER, question TEXT |
+| Answers | answer_id SERIAL PRIMARY KEY, question_id INTEGER, answer TEXT, correct BOOL |
+| Comments | comment_id SERIAL PRIMARY KEY, quiz_id INTEGER, user_id INTEGER, message TEXT, date TIMESTAMP |
+| Scores | user_id INTEGER, quiz_id INTEGER, score INTEGER
+| Log | log_id SERIAL PRIMARY KEY, date TIMESTAMP, user_id INTEGER, action TEXT
+
+![](documentation/images/database_chart.png)
