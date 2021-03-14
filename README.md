@@ -48,6 +48,10 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 - [ ] **Remove account**
 - [ ] Change password
 
+![](documentation/images/index.png)
+
+![](documentation/images/create-quiz.png)
+
 ## Database Tables
 | Name | Data |
 | - | - |
