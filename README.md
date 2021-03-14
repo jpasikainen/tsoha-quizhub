@@ -52,6 +52,10 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 
 ![](documentation/images/create-quiz.png)
 
+![](documentation/images/take-quiz.png)
+
+![](documentation/images/quiz-stats.png)
+
 ## Database Tables
 | Name | Data |
 | - | - |
