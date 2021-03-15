@@ -2,48 +2,50 @@
 Database project built with Flask and PostgreSQL for hy-tsoha.
 
 ## Description
-- Twitter like feed where posts are quizzes
-- A quiz consists of questions and multiple answers to choose from
-- After the quiz is over, the user can rate the quiz and is rewarded points based on the speed and accuracy
+- Generic social media like feed where posts are quizzes
+- A quiz consists of multiple questions and answers to choose from
+- After the quiz is over, the user can comment, rate the quiz, and is rewarded points based on their speed and accuracy
 - All the users can create and take part in quizzes
-- Admins can remove quizzes and users
+- Admins can remove quizzes, users, and comments
 
 ## Views
 **Bolded** tasks are main features.
 
-### Feed
+### Feed (index.html)
 - [ ] **Display quizzes in creation order**
-- [ ] **Open quiz on click**
-- [ ] **Create quiz button**
+- [ ] **Open the quiz on click**
+- [ ] **Create a quiz button**
 - [ ] Add sorting
 - [ ] Add search
 
-### Quiz
+### Quiz (quiz/\<int>.html)
 - [ ] **Opens to a new page**
-- [ ] **Display question and multiple choices**
-- [ ] **Add timer**
+- [ ] **Display a question and multiple choices**
+- [ ] **Add a timer**
 - [ ] **Reward points after completion**
-- [ ] **Rate quiz**
+- [ ] **Rate the quiz**
 - [ ] **Add comments**
-- [ ] Correct/Incorrect answers per question
+- [ ] **An admin can remove the quiz**
+- [ ] Correct/Incorrect answers per question (statistics)
 
-### Create user
+### Create user (register.html)
 - [ ] **Form with username and password fields**
-- [ ] **On submit check if username is taken**
-- [ ] **Hash password before saving**
+- [ ] **On submit check if the username is taken**
+- [ ] **Hash the password before saving**
 
-### Login
+### Login (login.html)
 - [ ] **Form with username and password fields**
-- [ ] **On submit check if password hash is correct and login**
+- [ ] **On submit check if the password hash is correct and login**
 
-### Create quiz
+### Create quiz (create.html)
 - [ ] **Quiz name**
 - [ ] **Add question and up to 4 answers choices**
 - [ ] **Ability add multiple questions**
+- [ ] Save draft
 - [ ] Add tags
 - [ ] Human verification before publishing
 
-### Profile page
+### Profile page (profile/\<int>.html)
 - [ ] **Remove a quiz**
 - [ ] **Remove account**
 - [ ] Change password
@@ -56,15 +58,10 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 
 ![](documentation/images/quiz-stats.png)
 
-## Database Tables
-| Name | Data |
-| - | - |
-| Users | user_id SERIAL PRIMARY KEY, username TEXT, password TEXT, admin BOOL |
-| Quizzes | quiz_id SERIAL PRIMARY KEY, creator_id INTEGER, title TEXT,  date TIMESTAMP, upvotes INTEGER, downvotes INTEGER |
-| Questions | question_id SERIAL PRIMARY KEY, quiz_id INTEGER, question TEXT |
-| Answers | answer_id SERIAL PRIMARY KEY, question_id INTEGER, answer TEXT, correct BOOL |
-| Comments | comment_id SERIAL PRIMARY KEY, quiz_id INTEGER, user_id INTEGER, message TEXT, date TIMESTAMP |
-| Scores | user_id INTEGER, quiz_id INTEGER, score INTEGER
-| Log | log_id SERIAL PRIMARY KEY, date TIMESTAMP, user_id INTEGER, action TEXT
+## Database
+
+[Schema](https://github.com/jpasikainen/tsoha-quizhub/blob/master/schema.sql)
+
+- [ ] Add bool published for quizzes 
 
 ![](documentation/images/database_chart.png)

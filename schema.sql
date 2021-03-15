@@ -26,7 +26,7 @@ CREATE TABLE answers (
     question_id INTEGER REFERENCES questions,
     answer TEXT,
     correct BOOL
-)
+);
 
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,
@@ -34,17 +34,17 @@ CREATE TABLE comments (
     user_id INTEGER REFERENCES users,
     message TEXT,
     date TIMESTAMP
-)
+);
 
 CREATE TABLE scores (
     user_id INTEGER REFERENCES users,
     quiz_id INTEGER REFERENCES quizzes,
     score INTEGER
-)
+);
 
 CREATE TABLE log (
     id SERIAL PRIMARY KEY,
     date TIMESTAMP,
     user_id INTEGER,
     action TEXT
-)
+);
