@@ -4,7 +4,8 @@ from db import db
 
 @app.route("/")
 def index():
-    sql = "SELECT * FROM quizzes"
+    sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
+        "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id"
     result = db.session.execute(sql).fetchall()
     return render_template("index.html", quizzes=result)
 
