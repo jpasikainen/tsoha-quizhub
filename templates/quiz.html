@@ -9,7 +9,7 @@
             <form action="" method="POST">
                 <input type="submit" value="{{ answer[0] }}"/>
                 <input type="hidden" name="index" value={{ index }} />
-                <input type="hidden" name="user_answer" value={{ loop.index }} />
+                <input type="hidden" name="user_answer_id" value={{ answer[1] }} />
             </form>
         {% endfor %}
     {% else %}

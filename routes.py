@@ -17,8 +17,12 @@ def quiz(id):
     
     # Save answers
     if question_index != 0:
-        user_answer = int(request.values.get("user_answer")) - 1
-        session[str(question_index)] = user_answer
+        user_answer_id = int(request.values.get("user_answer_id"))
+        temp = session["answers"]
+        temp.append(user_answer_id)
+        session["answers"] = temp
+    else:
+        session["answers"] = []
 
     # Get the question of the index
     sql = "SELECT id, question FROM questions WHERE quiz_id=:id LIMIT 1 OFFSET :question_index"
@@ -30,7 +34,29 @@ def quiz(id):
         question_id = question[0]
 
         # Get the answers for the question
-        sql = "SELECT answer FROM answers WHERE question_id=:question_id"
+        sql = "SELECT answer, id FROM answers WHERE question_id=:question_id"
         answers = db.session.execute(sql, {"question_id":question_id}).fetchall()
+    else:
+        session["quiz_id"] = id
 
     return render_template("quiz.html", question=question, answers=answers, index=question_index)
+
+@app.route("/results", methods=["POST"])
+def results():
+    # Get title
+    quiz_id = session["quiz_id"]
+    sql = "SELECT title FROM quizzes WHERE id=:quiz_id"
+    title = db.session.execute(sql, {"quiz_id":quiz_id}).fetchone()[0]
+
+    # Check how many correct answers
+    #answer_ids = ", ".join(str(item) for item in session["answers"])
+    sql = "SELECT correct FROM answers WHERE id IN :answer_ids"
+    answers = db.session.execute(sql, {"answer_ids":tuple(session["answers"])}).fetchall()
+    total = len(answers)
+    correct = 0
+    for answer in answers:
+        if answer[0] == True:
+            correct += 1
+
+    return render_template("results.html", title=title, correct=correct, total=total)
+    
