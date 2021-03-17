@@ -1,1 +1,15 @@
-<p>Hello, world</p> 
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="quizzes">
+        {% for quiz in quizzes %}
+        <div class="quiz">
+            <h3 style="flex: 1;">{{ quiz[1] }}</h3>
+            <h3 style="flex: 2;">{{ quiz[2] }}</h3>
+            <form action={{"quiz/" ~ quiz[0]}} method="POST">
+                <input type="submit" value="Start Quiz" />
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
