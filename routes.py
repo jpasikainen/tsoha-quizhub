@@ -83,6 +83,41 @@ def results():
 
     return render_template("results.html", title=title, correct=correct, total=total, score=score)
     
-@app.route("/create")
+@app.route("/create", methods=["POST", "GET"])
 def create():
+    # One of the buttons is pressed
+    if request.method == "POST":
+        if "publish" in request.form:
+            return "Published!"
+
+        # Create a quiz and save the id
+        sql = "INSERT INTO quizzes (creator_id, title, date, published, upvotes, downvotes) " \
+            "VALUES (:creator_id, :title, :date, :published, :upvotes, :downvotes) " \
+            "RETURNING id"
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        result = db.session.execute(sql, {"creator_id":1, "title":request.form["title"], \
+            "date":current_time, "published":False, "upvotes":0, "downvotes":0})
+        db.session.commit() # flush() instead?
+
+        quiz_id = result.fetchone()[0]
+        
+        sql = "INSERT INTO questions (quiz_id, question) VALUES (:quiz_id, :question) " \
+            "RETURNING id"
+        result = db.session.execute(sql, {"quiz_id":quiz_id, "question":request.form["question"]})
+        db.session.commit()
+
+        question_id = result.fetchone()[0]
+
+        for i in range(1, 5):
+            answer = request.form["answer_" + str(i)]
+            correct = False
+            if "correct_" + str(i) in request.form.keys():
+                correct = True
+            sql = "INSERT INTO answers (question_id, answer, correct) " \
+                "VALUES (:question_id, :answer, :correct)"
+            db.session.execute(sql, {"question_id":question_id, \
+                "answer":answer, "correct":correct})
+            db.session.flush()
+        db.session.commit()
+
     return render_template("create.html")

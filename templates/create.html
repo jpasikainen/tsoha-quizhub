@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <form action="/create" method="POST">
+        <input type="text" placeholder="Add title" name="title">
+        <br/>
+        <br/>
+        <input type="text" placeholder="Question" name="question">
+        <br/>
+        {% for i in range(4) %}
+            <input type="text" placeholder="Answer {{ loop.index }}" name="answer_{{ loop.index }}">
+            <input type="checkbox" name="correct_{{ loop.index }}" {% if i == 0 %} checked {% endif %}>
+            <label for="correct">Correct</label>
+            <br/>
+        {% endfor %}
+        <br/>
+        <input type="submit" value="Publish!" name="publish">
+        <input type="submit" value="Add new question" name="new">
+    </form>
+{% endblock %}
