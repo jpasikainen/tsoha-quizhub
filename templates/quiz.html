@@ -14,5 +14,9 @@
         {% endfor %}
     {% else %}
         <h1>Quiz ended!</h1>
+        {{ session }}
+        <form action="/results" method="POST">
+            <input type="submit" value="View results"/>
+        </form>
     {% endif %}
 {% endblock %}
