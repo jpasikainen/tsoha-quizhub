@@ -12,15 +12,15 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 **Bolded** tasks are main features.
 
 ### Feed (index.html)
-- [ ] **Display quizzes in creation order**
-- [ ] **Open the quiz on click**
+- [x] **Display quizzes in creation order**
+- [x] **Open the quiz on click**
 - [ ] **Create a quiz button**
 - [ ] Add sorting
 - [ ] Add search
 
 ### Quiz (quiz/\<int>.html)
-- [ ] **Opens to a new page**
-- [ ] **Display a question and multiple choices**
+- [x] **Opens to a new page**
+- [x] **Display a question and multiple choices**
 - [ ] **Add a timer**
 - [ ] **Reward points after completion**
 - [ ] **Rate the quiz**
