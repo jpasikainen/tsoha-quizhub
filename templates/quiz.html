@@ -1,17 +1,17 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    {% if index < quiz|length and answers|length > 0 %}
-        <h1>{{ quiz[index][2] }}</h1>
-        <form action="" method="POST">
-            {% set counter = 0 %}
-            {% for answer in answers %}
+    {% if question != None %}
+        <h1>{{question[1]}}</h1>
+        {% set index = index + 1 %}
+        {{ index }}
+        {% for answer in answers %}
+            <form action="" method="POST">
                 <input type="submit" value="{{ answer[0] }}"/>
                 <input type="hidden" name="index" value={{ index }} />
-                <input type="hidden" name="user_answer" value={{ counter }}
-                {% set counter = counter + 1 %}
-            {% endfor %}
-        </form>
+                <input type="hidden" name="user_answer" value={{ loop.index }} />
+            </form>
+        {% endfor %}
     {% else %}
         <h1>Quiz ended!</h1>
     {% endif %}
