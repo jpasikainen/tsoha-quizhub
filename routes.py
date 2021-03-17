@@ -1,9 +1,11 @@
 from app import app
-from flask import render_template, request, session
+from flask import render_template, request, session, redirect
 from db import db
+import datetime
 
 @app.route("/")
 def index():
+    # Get all the info required for making a post
     sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
         "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id"
     result = db.session.execute(sql).fetchall()
@@ -23,6 +25,10 @@ def quiz(id):
         temp.append(user_answer_id)
         session["answers"] = temp
     else:
+        # Save starting time
+        session["start_time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Reset answers
         session["answers"] = []
 
     # Get the question of the index
@@ -38,13 +44,21 @@ def quiz(id):
         sql = "SELECT answer, id FROM answers WHERE question_id=:question_id"
         answers = db.session.execute(sql, {"question_id":question_id}).fetchall()
     else:
+        # Quiz ended
+        # Write quiz_id only after completing the quiz
+        # This prevents quitting halfway through
         session["quiz_id"] = id
+        return redirect("/results")
 
     return render_template("quiz.html", question=question, answers=answers, index=question_index)
 
-@app.route("/results", methods=["POST"])
+@app.route("/results", methods=["POST", "GET"])
 def results():
-    # Get title
+    # Redirect GET requests if no cookies otherwise display previous quiz results
+    if request.method == "GET" and "quiz_id" not in session:
+        return redirect("/")
+
+    # Get the title
     quiz_id = session["quiz_id"]
     sql = "SELECT title FROM quizzes WHERE id=:quiz_id"
     title = db.session.execute(sql, {"quiz_id":quiz_id}).fetchone()[0]
@@ -60,6 +74,7 @@ def results():
 
     # Save score
     # 100 = full points
+    # Multiply 
     test_user = 1
     score = round(100 * (correct / total))
     sql = "INSERT INTO scores (user_id, quiz_id, score) VALUES (:user_id, :quiz_id, :score)"
@@ -68,3 +83,6 @@ def results():
 
     return render_template("results.html", title=title, correct=correct, total=total, score=score)
     
+@app.route("/create")
+def create():
+    return render_template("create.html")
