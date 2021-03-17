@@ -49,7 +49,6 @@ def results():
     title = db.session.execute(sql, {"quiz_id":quiz_id}).fetchone()[0]
 
     # Check how many correct answers
-    #answer_ids = ", ".join(str(item) for item in session["answers"])
     sql = "SELECT correct FROM answers WHERE id IN :answer_ids"
     answers = db.session.execute(sql, {"answer_ids":tuple(session["answers"])}).fetchall()
     total = len(answers)
@@ -58,5 +57,13 @@ def results():
         if answer[0] == True:
             correct += 1
 
-    return render_template("results.html", title=title, correct=correct, total=total)
+    # Save score
+    # 100 = full points
+    test_user = 1
+    score = round(100 * (correct / total))
+    sql = "INSERT INTO scores (user_id, quiz_id, score) VALUES (:user_id, :quiz_id, :score)"
+    db.session.execute(sql, {"user_id":test_user, "quiz_id":quiz_id, "score":score})
+    db.session.commit()
+
+    return render_template("results.html", title=title, correct=correct, total=total, score=score)
     
