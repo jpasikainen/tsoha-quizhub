@@ -2,8 +2,10 @@
 
 {% block content %}
     <form action="/create" method="POST">
-        <input type="text" placeholder="Add title" name="title">
-        <br/>
+        {% if title_page %}
+            <input type="text" placeholder="Add title" name="title">
+            <br/>
+        {% endif %}
         <br/>
         <input type="text" placeholder="Question" name="question">
         <br/>

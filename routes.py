@@ -91,24 +91,29 @@ def create():
             return "Published!"
 
         # Create a quiz and save the id
-        sql = "INSERT INTO quizzes (creator_id, title, date, published, upvotes, downvotes) " \
-            "VALUES (:creator_id, :title, :date, :published, :upvotes, :downvotes) " \
-            "RETURNING id"
-        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        result = db.session.execute(sql, {"creator_id":1, "title":request.form["title"], \
-            "date":current_time, "published":False, "upvotes":0, "downvotes":0})
-        db.session.commit() # flush() instead?
+        if request.values.get("title"):
+            sql = "INSERT INTO quizzes (creator_id, title, date, published, upvotes, downvotes) " \
+                "VALUES (:creator_id, :title, :date, :published, :upvotes, :downvotes) " \
+                "RETURNING id"
+            current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            result = db.session.execute(sql, {"creator_id":1, "title":request.form["title"], \
+                "date":current_time, "published":False, "upvotes":0, "downvotes":0})
+            db.session.flush() # flush() instead?
 
-        quiz_id = result.fetchone()[0]
-        
+            quiz_id = result.fetchone()[0]
+            session["quiz_id"] = quiz_id
+            
         sql = "INSERT INTO questions (quiz_id, question) VALUES (:quiz_id, :question) " \
             "RETURNING id"
-        result = db.session.execute(sql, {"quiz_id":quiz_id, "question":request.form["question"]})
-        db.session.commit()
+        result = db.session.execute(sql, {"quiz_id":session["quiz_id"], "question":request.form["question"]})
+        db.session.flush()
 
         question_id = result.fetchone()[0]
 
         for i in range(1, 5):
+            # If empty, drop
+            if request.values.get("answer_" + str(i)) == "":
+                continue
             answer = request.form["answer_" + str(i)]
             correct = False
             if "correct_" + str(i) in request.form.keys():
@@ -120,4 +125,6 @@ def create():
             db.session.flush()
         db.session.commit()
 
-    return render_template("create.html")
+        return render_template("create.html", title_page=False)
+
+    return render_template("create.html", title_page=True)
