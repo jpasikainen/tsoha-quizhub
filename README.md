@@ -14,7 +14,7 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 ### Feed (index.html)
 - [x] **Display quizzes in creation order**
 - [x] **Open the quiz on click**
-- [ ] **Create a quiz button**
+- [x] **Create a quiz button**
 - [ ] Add sorting
 - [ ] Add search
 
@@ -22,7 +22,7 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 - [x] **Opens to a new page**
 - [x] **Display a question and multiple choices**
 - [ ] **Add a timer**
-- [ ] **Reward points after completion**
+- [x] **Reward points after completion**
 - [ ] **Rate the quiz**
 - [ ] **Add comments**
 - [ ] **An admin can remove the quiz**
@@ -38,9 +38,9 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 - [ ] **On submit check if the password hash is correct and login**
 
 ### Create quiz (create.html)
-- [ ] **Quiz name**
-- [ ] **Add question and up to 4 answers choices**
-- [ ] **Ability add multiple questions**
+- [x] **Quiz name**
+- [x] **Add question and up to 4 answers choices**
+- [x] **Ability add multiple questions**
 - [ ] Save draft
 - [ ] Add tags
 - [ ] Human verification before publishing
@@ -62,6 +62,6 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 
 [Schema](https://github.com/jpasikainen/tsoha-quizhub/blob/master/schema.sql)
 
-- [ ] Add bool published for quizzes 
+- [x] Add bool published for quizzes 
 
 ![](documentation/images/database_chart.png)
