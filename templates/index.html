@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
 {% block content %}
+    <form action="/create" method="GET">
+        <input type="submit" value="Create a Quiz!">
+    </form>
     <div class="quizzes">
         {% for quiz in quizzes %}
         <div class="quiz">
