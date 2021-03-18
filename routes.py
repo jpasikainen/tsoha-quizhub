@@ -16,7 +16,7 @@ def index():
     # Get only visible quizzes
     sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
         "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
-        "WHERE visible=TRUE " \
+        "WHERE visible=TRUE AND published=TRUE " \
         "ORDER BY date DESC"
     result = db.session.execute(sql).fetchall()
 
@@ -76,6 +76,7 @@ def results():
     title = db.session.execute(sql, {"quiz_id":quiz_id}).fetchone()[0]
 
     # Check how many correct answers
+    # TODO: Do calculations in the query, COUNT
     sql = "SELECT correct FROM answers WHERE id IN :answer_ids"
     answers = db.session.execute(sql, {"answer_ids":tuple(session["answers"])}).fetchall()
     total = len(answers)
@@ -86,7 +87,7 @@ def results():
 
     # Save score
     # 100 = full points
-    # Multiply 
+    # Add time effect
     test_user = 1
     score = round(100 * (correct / total))
     sql = "INSERT INTO scores (user_id, quiz_id, score) VALUES (:user_id, :quiz_id, :score)"
@@ -99,9 +100,6 @@ def results():
 def create():
     # One of the buttons is pressed
     if request.method == "POST":
-        if "publish" in request.form:
-            return "Published!"
-
         # Create a quiz and save the id
         if request.values.get("title"):
             sql = "INSERT INTO quizzes (creator_id, title) " \
@@ -134,6 +132,12 @@ def create():
                 "answer":answer, "correct":correct})
             db.session.flush()
         db.session.commit()
+
+        if "publish" in request.form:
+            sql = "UPDATE quizzes SET published=TRUE WHERE id=:quiz_id"
+            db.session.execute(sql, {"quiz_id":session["quiz_id"]})
+            db.session.commit()
+            return "Published!"
 
         return render_template("create.html", title_page=False)
 
