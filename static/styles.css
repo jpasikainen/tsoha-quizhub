@@ -12,6 +12,11 @@ header {
   box-shadow: 0 1px 3px rgba(34, 34, 34, 0.2);
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 input {
   cursor: pointer;
 }

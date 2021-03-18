@@ -3,14 +3,25 @@ from flask import render_template, request, session, redirect
 from db import db
 import datetime
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
+    # Delete button for admins, just hides the tables
+    if request.method == "POST" and request.values.get("delete"):
+        quiz_id = int(request.values.get("quiz_id"))
+        sql = "UPDATE quizzes SET visible=FALSE WHERE id=:quiz_id"
+        db.session.execute(sql, {"quiz_id":quiz_id})
+        db.session.commit()
+
     # Get all the info required for making a post
+    # Get only visible quizzes
     sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
         "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
+        "WHERE visible=TRUE " \
         "ORDER BY date DESC"
     result = db.session.execute(sql).fetchall()
-    return render_template("index.html", quizzes=result)
+
+    # TODO: Check admin status
+    return render_template("index.html", quizzes=result, admin=True)
 
 @app.route("/quiz/<int:id>", methods=["GET", "POST"])
 def quiz(id):

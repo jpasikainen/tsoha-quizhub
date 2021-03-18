@@ -12,7 +12,8 @@ CREATE TABLE quizzes (
     date TIMESTAMP,
     published BOOL,
     upvotes INTEGER,
-    downvotes INTEGER
+    downvotes INTEGER,
+    visible BOOL DEFAULT TRUE
 );
 
 CREATE TABLE questions (

@@ -12,6 +12,12 @@
             <form action={{"quiz/" ~ quiz[1]}} method="POST">
                 <input type="submit" value="Start Quiz" />
             </form>
+            {% if admin %}
+                <form action="/" method="POST">
+                    <input type="submit" value="Delete" name="delete" />
+                    <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
+                </form>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
