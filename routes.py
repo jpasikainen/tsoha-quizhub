@@ -79,14 +79,12 @@ def results():
     title = db.session.execute(sql, {"quiz_id":quiz_id}).fetchone()[0]
 
     # Check how many correct answers
-    # TODO: Do calculations in the query, COUNT
-    sql = "SELECT correct FROM answers WHERE id IN :answer_ids"
-    answers = db.session.execute(sql, {"answer_ids":tuple(session["answers"])}).fetchall()
-    total = len(answers)
-    correct = 0
-    for answer in answers:
-        if answer[0] == True:
-            correct += 1
+    sql = "SELECT COUNT(correct), " \
+        "(SELECT COUNT(correct) FROM answers WHERE id IN :answer_ids AND correct = TRUE) " \
+        "FROM answers WHERE id IN :answer_ids"
+    answers = db.session.execute(sql, {"answer_ids":tuple(session["answers"])}).fetchone()
+    total = answers[0]
+    correct = answers[1]
 
     # Save score
     # 100 = full points
