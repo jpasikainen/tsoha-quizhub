@@ -25,17 +25,17 @@ Database project built with Flask and PostgreSQL for hy-tsoha.
 - [x] **Reward points after completion**
 - [ ] **Rate the quiz**
 - [ ] **Add comments**
-- [ ] **An admin can remove the quiz**
+- [x] **An admin can remove the quiz**
 - [ ] Correct/Incorrect answers per question (statistics)
 
 ### Create user (register.html)
-- [ ] **Form with username and password fields**
-- [ ] **On submit check if the username is taken**
-- [ ] **Hash the password before saving**
+- [x] **Form with username and password fields**
+- [x] **On submit check if the username is taken**
+- [x] **Hash the password before saving**
 
 ### Login (login.html)
-- [ ] **Form with username and password fields**
-- [ ] **On submit check if the password hash is correct and login**
+- [x] **Form with username and password fields**
+- [x] **On submit check if the password hash is correct and login**
 
 ### Create quiz (create.html)
 - [x] **Quiz name**
