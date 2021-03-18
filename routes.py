@@ -7,7 +7,8 @@ import datetime
 def index():
     # Get all the info required for making a post
     sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
-        "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id"
+        "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
+        "ORDER BY date DESC"
     result = db.session.execute(sql).fetchall()
     return render_template("index.html", quizzes=result)
 
@@ -55,7 +56,7 @@ def quiz(id):
 @app.route("/results", methods=["POST", "GET"])
 def results():
     # Redirect GET requests if no cookies otherwise display previous quiz results
-    if request.method == "GET" and "quiz_id" not in session:
+    if request.method == "GET" and "quiz_id" not in session or len(session["answers"]) == 0:
         return redirect("/")
 
     # Get the title
