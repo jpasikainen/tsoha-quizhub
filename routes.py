@@ -1,5 +1,6 @@
 from app import app
 from flask import render_template, request, session, redirect
+from werkzeug.security import check_password_hash, generate_password_hash
 from db import db
 import datetime
 
@@ -142,3 +143,69 @@ def create():
         return render_template("create.html", title_page=False)
 
     return render_template("create.html", title_page=True)
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    # Redirect logged in users
+    if session.get("username"):
+        return redirect("/profile/" + session["username"])
+
+    # Login
+    if request.method == "POST":
+        # Check that all the fields are filled
+        if not request.values.get("username") or not request.values.get("password"):
+            return render_template("login.html", error_message="Please fill all the fields")
+
+        username = request.form["username"]
+        password = request.form["password"]
+
+        sql = "SELECT password FROM users WHERE username=:username"
+        user = db.session.execute(sql, {"username":username}).fetchone()
+        
+        if user == None:
+            return "Incorrect username"
+        else:
+            hash_value = user[0]
+            if check_password_hash(hash_value, password):
+                session["username"] = username
+                return "Correct"
+            else:
+                return "Incorrect password"
+
+        return redirect("/")
+    return render_template("login.html")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    # Register
+    if request.method == "POST":
+        # Check that all the fields are filled
+        if not request.values.get("username") or not request.values.get("password"):
+            return render_template("register.html", error_message="Please fill all the fields")
+        
+        # Check if username exists already
+        username = request.form["username"]
+        sql = "SELECT COUNT(:username) FROM users WHERE username=:username"
+        result = db.session.execute(sql, {"username":username}).fetchone()[0]
+        
+        if result != 0:
+            error_message = "Username has been taken. Try another one"
+            return render_template("register.html", error_message=error_message)
+
+        password = request.form["password"]
+
+        hash_value = generate_password_hash(password)
+        sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
+        db.session.execute(sql, {"username":username, "password":hash_value})
+        db.session.commit()
+        return redirect("/")
+    
+    return render_template("register.html")
+
+@app.route("/logout")
+def logout():
+    # Logout
+    if session.get("username"):
+        session.pop("username")
+        return render_template("logout.html")
+    return redirect("/")

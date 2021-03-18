@@ -8,10 +8,17 @@
 <body>
     <header>
         <div class="topbar">
-            <a href="/"><h1>Quizhub</h1></a>
-            <form action={{"profile/"}} method="POST">
-                <input type="submit" value="Username" />
-            </form>
+            <a href="/" class="title"><h1>Quizhub</h1></a>
+            {% if session.username %}
+            <div>    
+                <form style="display: inline-block;" action="/profile/{{ session.username }}" method="GET">
+                    <input type="submit" value="{{ session.username }}" />
+                </form>
+                <a style="display: inline-block;" href="/logout">Logout</a>
+            </div>
+            {% else %}
+                <a href="/login" >Login / Register</a>
+            {% endif %}
         </div>
     </header>
     <main>

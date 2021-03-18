@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    {% if error_message %}
+        <h1 class="error">{{ error_message }}</h1>
+    {% endif %}
+
+    <form action="/login" method="POST">
+        <p>Username:</p>
+        <input type="text" name="username">
+        <br/>
+        <p>Password:</p>
+        <input type="password" name="password">
+        <br/>
+        <input type="submit" value="Login">
+    </form>
+    <br/>
+    <a href="/register"><strong>New user? Click here to create an account</strong></a>
+{% endblock %}

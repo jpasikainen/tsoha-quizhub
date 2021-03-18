@@ -1,9 +1,13 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <form action="/create" method="GET">
-        <input type="submit" value="Create a Quiz!">
-    </form>
+    {% if session.username %}
+        <form action="/create" method="GET">
+            <input type="submit" value="Create a Quiz!">
+        </form>
+    {% else %}
+        <a href="/login">Login / Register to create a Quiz!</a>
+    {% endif %}
     <div class="quizzes">
         {% for quiz in quizzes %}
         <div class="quiz">
