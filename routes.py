@@ -22,7 +22,7 @@ def index():
     result = db.session.execute(sql).fetchall()
 
     # Check if user is admin and return False if the cookies is not found
-    is_admin = request.values.get("is_admin", False)
+    is_admin = session.get("is_admin", False)
 
     return render_template("index.html", quizzes=result, admin=is_admin)
 
