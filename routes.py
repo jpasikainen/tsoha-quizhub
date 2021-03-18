@@ -104,13 +104,11 @@ def create():
 
         # Create a quiz and save the id
         if request.values.get("title"):
-            sql = "INSERT INTO quizzes (creator_id, title, date, published, upvotes, downvotes) " \
-                "VALUES (:creator_id, :title, :date, :published, :upvotes, :downvotes) " \
+            sql = "INSERT INTO quizzes (creator_id, title) " \
+                "VALUES (:creator_id, :title) " \
                 "RETURNING id"
-            current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            result = db.session.execute(sql, {"creator_id":1, "title":request.form["title"], \
-                "date":current_time, "published":False, "upvotes":0, "downvotes":0})
-            db.session.flush() # flush() instead?
+            result = db.session.execute(sql, {"creator_id":1, "title":request.form["title"]})
+            db.session.flush()
 
             quiz_id = result.fetchone()[0]
             session["quiz_id"] = quiz_id
