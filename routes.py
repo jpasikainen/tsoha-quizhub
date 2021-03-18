@@ -21,7 +21,10 @@ def index():
         "ORDER BY date DESC"
     result = db.session.execute(sql).fetchall()
 
-    return render_template("index.html", quizzes=result, admin=session["is_admin"])
+    # Check if user is admin and return False if the cookies is not found
+    is_admin = request.values.get("is_admin", False)
+
+    return render_template("index.html", quizzes=result, admin=is_admin)
 
 @app.route("/quiz/<int:id>", methods=["GET", "POST"])
 def quiz(id):
@@ -137,7 +140,7 @@ def create():
             sql = "UPDATE quizzes SET published=TRUE WHERE id=:quiz_id"
             db.session.execute(sql, {"quiz_id":session["quiz_id"]})
             db.session.commit()
-            return "Published!"
+            return redirect("/")
 
         return render_template("create.html", title_page=False)
 
@@ -205,7 +208,7 @@ def register():
 def logout():
     # Logout
     if session.get("username"):
-        session.pop("username")
-        session.pop("is_admin")
+        session.pop("username", None)
+        session.pop("is_admin", None)
         return render_template("logout.html")
     return redirect("/")

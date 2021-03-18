@@ -4,4 +4,7 @@
     <h1>{{ title }}</h1>
     <h3>{{ correct }} / {{ total }}</h3>
     <h3>Score: {{ score }}</h3>
+    <a href="/quiz/{{ session.quiz_id }}">Click to Retry</a>
+    <p>or</p>
+    <a href="/">Click to Return</a>
 {% endblock %}
