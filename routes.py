@@ -21,8 +21,7 @@ def index():
         "ORDER BY date DESC"
     result = db.session.execute(sql).fetchall()
 
-    # TODO: Check admin status
-    return render_template("index.html", quizzes=result, admin=True)
+    return render_template("index.html", quizzes=result, admin=session["is_admin"])
 
 @app.route("/quiz/<int:id>", methods=["GET", "POST"])
 def quiz(id):
@@ -159,7 +158,7 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT password FROM users WHERE username=:username"
+        sql = "SELECT password, admin FROM users WHERE username=:username"
         user = db.session.execute(sql, {"username":username}).fetchone()
         
         if user == None:
@@ -168,7 +167,7 @@ def login():
             hash_value = user[0]
             if check_password_hash(hash_value, password):
                 session["username"] = username
-                return "Correct"
+                session["is_admin"] = user[1]
             else:
                 return "Incorrect password"
 
@@ -207,5 +206,6 @@ def logout():
     # Logout
     if session.get("username"):
         session.pop("username")
+        session.pop("is_admin")
         return render_template("logout.html")
     return redirect("/")
