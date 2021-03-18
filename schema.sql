@@ -2,29 +2,29 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
     password TEXT,
-    admin BOOL
+    admin BOOL DEFAULT FALSE
 );
 
 CREATE TABLE quizzes (
     id SERIAL PRIMARY KEY,
     creator_id INTEGER REFERENCES users,
     title TEXT,
-    date TIMESTAMP,
-    published BOOL,
-    upvotes INTEGER,
-    downvotes INTEGER,
+    date TIMESTAMP NOT NULL DEFAULT date_trunc('second', NOW()::TIMESTAMP),
+    published BOOL DEFAULT FALSE,
+    upvotes INTEGER DEFAULT 0,
+    downvotes INTEGER DEFAULT 0,
     visible BOOL DEFAULT TRUE
 );
 
 CREATE TABLE questions (
     id SERIAL PRIMARY KEY,
-    quiz_id INTEGER REFERENCES quizzes,
+    quiz_id INTEGER REFERENCES quizzes ON DELETE CASCADE,
     question TEXT
 );
 
 CREATE TABLE answers (
     id SERIAL PRIMARY KEY,
-    question_id INTEGER REFERENCES questions,
+    question_id INTEGER REFERENCES questions ON DELETE CASCADE,
     answer TEXT,
     correct BOOL
 );
@@ -34,18 +34,18 @@ CREATE TABLE comments (
     quiz_id INTEGER REFERENCES quizzes,
     user_id INTEGER REFERENCES users,
     message TEXT,
-    date TIMESTAMP
+    date TIMESTAMP NOT NULL DEFAULT date_trunc('second', NOW()::TIMESTAMP)
 );
 
 CREATE TABLE scores (
     user_id INTEGER REFERENCES users,
-    quiz_id INTEGER REFERENCES quizzes,
+    quiz_id INTEGER REFERENCES quizzes ON DELETE CASCADE,
     score INTEGER
 );
 
 CREATE TABLE log (
     id SERIAL PRIMARY KEY,
-    date TIMESTAMP,
+    date TIMESTAMP NOT NULL DEFAULT date_trunc('second', NOW()::TIMESTAMP),
     user_id INTEGER,
     action TEXT
 );
