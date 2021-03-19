@@ -96,9 +96,69 @@ def results():
     db.session.commit()
 
     return render_template("results.html", title=title, correct=correct, total=total, score=score)
-    
+
 @app.route("/create", methods=["POST", "GET"])
 def create():
+    if session.get("user_id") == None:
+        return redirect("/")
+
+    question_count = 1
+    
+    error_message = None
+    # A button was pressed
+    if request.method == "POST":
+        # Create new question + answers fields
+        if "new_question" in request.form:
+            question_count = int(request.form["question_count"])
+        
+        # Save fields
+        # question_x, answer_x_y
+        # Dude, fix the spaghetti
+        empty_definition = ["", " ", None]
+        
+        title = None
+        if request.values.get("title") not in empty_definition:
+            title = request.values.get("title")
+            session["title"] = title
+        
+        for i in range(question_count):
+            if request.values.get("question_" + str(i)) not in empty_definition:
+                session["question_" + str(i)] = request.values.get("question_" + str(i))
+            for j in range(4):
+                if request.values.get("answer_" + str(i) + "_" + str(j)) not in empty_definition:
+                    session["answer_" + str(i) + "_" + str(j)] = request.values.get("answer_" + str(i) + "_" + str(j))
+                    session["correct_" + str(i) + "_" + str(j)] = request.values.get("correct_" + str(i) + "_" + str(j), False)
+        
+        if title == None:
+            error_message = "Insert a valid title"
+        else:
+            for i in range(question_count):
+                empty_answers = 0
+                for j in range(question_count):
+                    if request.values.get("answer_" + str(i) + "_" + str(j), None) in empty_definition:
+                        empty_answers += 1
+                if empty_answers >= question_count:
+                    if request.values.get("question_" + str(i), None) in empty_definition:
+                        error_message = "Insert a valid question"
+                    else:
+                        error_message = "Insert a valid answer"
+                #return str(empty_answers>= question_count)
+
+        # Publish
+        if "publish" in request.form:
+            sql = "INSERT INTO quizzes (creator_id, title) " \
+                "VALUES (:creator_id, :title) RETURNING id"
+            result = db.session.execute(sql, {"creator_id":session["user_id"], "title":title})
+            db.session.flush()
+        
+        if error_message != None:
+            question_count -= 1
+
+        return render_template("create.html", questions=question_count+1, error_message=error_message)
+
+    return render_template("create.html", questions=question_count, error_message=error_message)
+
+def createlegacy():
     # One of the buttons is pressed
     if request.method == "POST":
         # Create a quiz and save the id
@@ -159,7 +219,7 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT password, admin FROM users WHERE username=:username"
+        sql = "SELECT password, admin, id FROM users WHERE username=:username"
         user = db.session.execute(sql, {"username":username}).fetchone()
         
         if user == None:
@@ -169,6 +229,7 @@ def login():
             if check_password_hash(hash_value, password):
                 session["username"] = username
                 session["is_admin"] = user[1]
+                session["user_id"] = user[2]
             else:
                 return "Incorrect password"
 
@@ -208,5 +269,6 @@ def logout():
     if session.get("username"):
         session.pop("username", None)
         session.pop("is_admin", None)
+        session.pop("user_id", None)
         return render_template("logout.html")
     return redirect("/")
