@@ -127,14 +127,17 @@ def create():
             for j in range(4):
                 if request.values.get("answer_" + str(i) + "_" + str(j)) not in empty_definition:
                     session["answer_" + str(i) + "_" + str(j)] = request.values.get("answer_" + str(i) + "_" + str(j))
-                    session["correct_" + str(i) + "_" + str(j)] = request.values.get("correct_" + str(i) + "_" + str(j), False)
+                    session["correct_" + str(i) + "_" + str(j)] = request.values.get("correct_" + str(i) + "_" + str(j), False)                
         
         if title == None:
             error_message = "Insert a valid title"
         else:
+            correct_answers = 0
             for i in range(question_count):
                 empty_answers = 0
                 for j in range(question_count):
+                    if request.values.get("correct_" + str(i) + "_" + str(j), None) != None:
+                        correct_answers += 1
                     if request.values.get("answer_" + str(i) + "_" + str(j), None) in empty_definition:
                         empty_answers += 1
                 if empty_answers >= question_count:
@@ -142,9 +145,11 @@ def create():
                         error_message = "Insert a valid question"
                     else:
                         error_message = "Insert a valid answer"
+            if error_message == None and correct_answers < question_count:
+                error_message = "Must have at least one correct answer per question. " + str(correct_answers) + " / " + str(question_count)
 
-        # Publish
-        if "publish" in request.form:
+        # Publish if no errors
+        if "publish" in request.form and error_message == None:
             sql = "INSERT INTO quizzes (creator_id, title, published) " \
                 "VALUES (:creator_id, :title, :published) RETURNING id"
             quiz_id = db.session.execute(sql, {"creator_id":session["user_id"], "title":title, "published":True}).fetchone()[0]
