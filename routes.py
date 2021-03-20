@@ -102,7 +102,7 @@ def create():
     if session.get("user_id") == None:
         return redirect("/")
 
-    question_count = 1
+    question_count = int(request.values.get("question_count", 1))
     
     error_message = None
     # A button was pressed
@@ -142,14 +142,40 @@ def create():
                         error_message = "Insert a valid question"
                     else:
                         error_message = "Insert a valid answer"
-                #return str(empty_answers>= question_count)
 
         # Publish
         if "publish" in request.form:
-            sql = "INSERT INTO quizzes (creator_id, title) " \
-                "VALUES (:creator_id, :title) RETURNING id"
-            result = db.session.execute(sql, {"creator_id":session["user_id"], "title":title})
+            sql = "INSERT INTO quizzes (creator_id, title, published) " \
+                "VALUES (:creator_id, :title, :published) RETURNING id"
+            quiz_id = db.session.execute(sql, {"creator_id":session["user_id"], "title":title, "published":True}).fetchone()[0]
             db.session.flush()
+            
+            for i in range(question_count):
+                question = session.get("question_" + str(i))
+                sql = "INSERT INTO questions (quiz_id, question) VALUES (:quiz_id, :question) RETURNING id"
+                question_id = db.session.execute(sql, {"quiz_id":quiz_id, "question":question}).fetchone()[0]
+                db.session.flush()
+                for j in range(4):
+                    answer = session.get("answer_" + str(i) + "_" + str(j), None)
+                    if answer != None:
+                        correct = session.get("correct_" + str(i) + "_" + str(j), False)
+                        if correct != False:
+                            correct = True
+
+                        sql = "INSERT INTO answers (question_id, answer, correct) VALUES (:question_id, :answer, :correct)"
+                        db.session.execute(sql, {"question_id":question_id, "answer":answer, "correct":correct})
+                        db.session.flush()
+            db.session.commit()
+
+            # Clear cache
+            session.pop("title", None)
+            for i in range(question_count):
+                session.pop("question_" + str(i), None)
+                for j in range(4):
+                    session.pop("answer_" + str(i) + "_" + str(j), None)
+                    session.pop("correct_" + str(i) + "_" + str(j), None)
+
+            return redirect("/")
         
         if error_message != None:
             question_count -= 1
