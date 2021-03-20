@@ -4,7 +4,6 @@
     {% if question != None %}
         <h1>{{question[1]}}</h1>
         {% set index = index + 1 %}
-        {{ index }}
         {% for answer in answers %}
             <form action="" method="POST">
                 <input type="submit" value="{{ answer[0] }}"/>
