@@ -241,6 +241,7 @@ def login():
     if session.get("username"):
         return redirect("/profile/" + session["username"])
 
+    error_message = None
     # Login
     if request.method == "POST":
         # Check that all the fields are filled
@@ -254,18 +255,18 @@ def login():
         user = db.session.execute(sql, {"username":username}).fetchone()
         
         if user == None:
-            return "Incorrect username"
+            error_message = "Incorrect username"
         else:
             hash_value = user[0]
             if check_password_hash(hash_value, password):
                 session["username"] = username
                 session["is_admin"] = user[1]
                 session["user_id"] = user[2]
+                return redirect("/")
             else:
-                return "Incorrect password"
+                error_message = "Incorrect password"
 
-        return redirect("/")
-    return render_template("login.html")
+    return render_template("login.html", error_message=error_message)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
