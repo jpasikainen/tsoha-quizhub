@@ -1,16 +1,14 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    {% if session.username %}
-        <form action="/create" method="GET">
-            <input type="submit" value="Create a Quiz!">
-        </form>
-    {% else %}
-        <a href="/login">Login / Register to create a Quiz!</a>
-    {% endif %}
+    <h1>User's {{ session.username }} profile</h1>
+    <h3>Quizzes:</h3>
+    {% for quiz in quizzes %}
         <div class="quizzes">
-            {% for quiz in quizzes %}
             <div class="quiz">
+                {% if quiz[6] %}
+                    <p>Published: {{ quiz[6] }}</p>
+                {% endif %}
                 <h3 style="flex: 1;">{{ quiz[0] }}</h3>
                 <h3 style="flex: 2;">{{ quiz[2] }}</h3>
                 <form action={{"quiz/" ~ quiz[1]}} method="POST">
