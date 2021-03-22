@@ -8,7 +8,7 @@ import datetime
 def index():
     # Delete button for admins, just hides the tables
     if request.method == "POST" and request.values.get("delete"):
-        quiz_id = int(request.values.get("quiz_id"))
+        quiz_id = request.values.get("quiz_id")
         sql = "UPDATE quizzes SET visible=FALSE WHERE id=:quiz_id"
         db.session.execute(sql, {"quiz_id":quiz_id})
         db.session.commit()
@@ -29,9 +29,7 @@ def index():
 @app.route("/quiz/<int:id>", methods=["GET", "POST"])
 def quiz(id):
     # Get the index of the question
-    question_index = 0
-    if request.values.get("index") != None:
-        question_index = int(request.values.get("index"))
+    question_index = int(request.values.get("index", 0))
     
     # Save answers
     if question_index != 0:
@@ -53,11 +51,9 @@ def quiz(id):
     answers = []
     # Get the answers if there is a question 
     if question != None:
-        question_id = question[0]
-
         # Get the answers for the question
         sql = "SELECT answer, id FROM answers WHERE question_id=:question_id"
-        answers = db.session.execute(sql, {"question_id":question_id}).fetchall()
+        answers = db.session.execute(sql, {"question_id":question[0]}).fetchall()
     else:
         # Quiz ended
         # Write quiz_id only after completing the quiz
@@ -65,7 +61,7 @@ def quiz(id):
         session["quiz_id"] = id
         return redirect("/results")
 
-    return render_template("quiz.html", question=question, answers=answers, index=question_index)
+    return render_template("quiz.html", question=question[1], answers=answers, index=question_index)
 
 @app.route("/results", methods=["POST", "GET"])
 def results():
@@ -102,138 +98,48 @@ def create():
     if session.get("user_id") == None:
         return redirect("/")
 
-    question_count = int(request.values.get("question_count", 1))
-    
     error_message = None
-    # A button was pressed
-    if request.method == "POST":
-        # Create new question + answers fields
-        if "new_question" in request.form:
-            question_count = int(request.form["question_count"])
-        
-        # Save fields
-        # question_x, answer_x_y
-        # Dude, fix the spaghetti
-        empty_definition = ["", " ", None]
-        
-        title = None
-        if request.values.get("title") not in empty_definition:
-            title = request.values.get("title")
-            session["title"] = title
-        
-        for i in range(question_count):
-            if request.values.get("question_" + str(i)) not in empty_definition:
-                session["question_" + str(i)] = request.values.get("question_" + str(i))
-            for j in range(4):
-                if request.values.get("answer_" + str(i) + "_" + str(j)) not in empty_definition:
-                    session["answer_" + str(i) + "_" + str(j)] = request.values.get("answer_" + str(i) + "_" + str(j))
-                    session["correct_" + str(i) + "_" + str(j)] = request.values.get("correct_" + str(i) + "_" + str(j), False)                
-        
-        if title == None:
-            error_message = "Insert a valid title"
-        else:
-            correct_answers = 0
-            for i in range(question_count):
-                empty_answers = 0
-                for j in range(question_count):
-                    if request.values.get("correct_" + str(i) + "_" + str(j), None) != None:
-                        correct_answers += 1
-                    if request.values.get("answer_" + str(i) + "_" + str(j), None) in empty_definition:
-                        empty_answers += 1
-                if empty_answers >= question_count:
-                    if request.values.get("question_" + str(i), None) in empty_definition:
-                        error_message = "Insert a valid question"
-                    else:
-                        error_message = "Insert a valid answer"
-            if error_message == None and correct_answers < question_count:
-                error_message = "Must have at least one correct answer per question. " + str(correct_answers) + " / " + str(question_count)
 
-        # Publish if no errors
-        if "publish" in request.form and error_message == None:
-            sql = "INSERT INTO quizzes (creator_id, title, published) " \
-                "VALUES (:creator_id, :title, :published) RETURNING id"
-            quiz_id = db.session.execute(sql, {"creator_id":session["user_id"], "title":title, "published":True}).fetchone()[0]
+    if request.method == "POST":        
+        title = request.form.get("title")
+        question = request.form.get("question")
+
+        answers = []        
+        corrects = []
+        for i in range(4):
+            answers.append(request.form.get("answer_" + str(i)))
+            corrects.append(request.form.get("correct_" + str(i), False))
+        #return str(session["quiz_id"])
+        if session.get("create_quiz_id", None) == None:
+            sql = "INSERT INTO quizzes (creator_id, title) VALUES(:creator_id, :title) RETURNING id"
+            quiz_id = db.session.execute(sql, {"creator_id":session["user_id"], "title":title}).fetchone()[0]
             db.session.flush()
-            
-            for i in range(question_count):
-                question = session.get("question_" + str(i))
-                sql = "INSERT INTO questions (quiz_id, question) VALUES (:quiz_id, :question) RETURNING id"
-                question_id = db.session.execute(sql, {"quiz_id":quiz_id, "question":question}).fetchone()[0]
-                db.session.flush()
-                for j in range(4):
-                    answer = session.get("answer_" + str(i) + "_" + str(j), None)
-                    if answer != None:
-                        correct = session.get("correct_" + str(i) + "_" + str(j), False)
-                        if correct != False:
-                            correct = True
+            session["create_quiz_id"] = quiz_id
 
-                        sql = "INSERT INTO answers (question_id, answer, correct) VALUES (:question_id, :answer, :correct)"
-                        db.session.execute(sql, {"question_id":question_id, "answer":answer, "correct":correct})
-                        db.session.flush()
-            db.session.commit()
-
-            # Clear cache
-            session.pop("title", None)
-            for i in range(question_count):
-                session.pop("question_" + str(i), None)
-                for j in range(4):
-                    session.pop("answer_" + str(i) + "_" + str(j), None)
-                    session.pop("correct_" + str(i) + "_" + str(j), None)
-
-            return redirect("/")
-        
-        if error_message != None:
-            question_count -= 1
-
-        return render_template("create.html", questions=question_count+1, error_message=error_message)
-
-    return render_template("create.html", questions=question_count, error_message=error_message)
-
-def createlegacy():
-    # One of the buttons is pressed
-    if request.method == "POST":
-        # Create a quiz and save the id
-        if request.values.get("title"):
-            sql = "INSERT INTO quizzes (creator_id, title) " \
-                "VALUES (:creator_id, :title) " \
-                "RETURNING id"
-            result = db.session.execute(sql, {"creator_id":1, "title":request.form["title"]})
-            db.session.flush()
-
-            quiz_id = result.fetchone()[0]
-            session["quiz_id"] = quiz_id
-            
-        sql = "INSERT INTO questions (quiz_id, question) VALUES (:quiz_id, :question) " \
-            "RETURNING id"
-        result = db.session.execute(sql, {"quiz_id":session["quiz_id"], "question":request.form["question"]})
+        sql = "INSERT INTO questions (quiz_id, question) VALUES(:quiz_id, :question) RETURNING id"
+        question_id = db.session.execute(sql, {"quiz_id":session["create_quiz_id"], "question":question}).fetchone()[0]
         db.session.flush()
 
-        question_id = result.fetchone()[0]
-
-        for i in range(1, 5):
-            # If empty, drop
-            if request.values.get("answer_" + str(i)) == "":
+        for i in range(4):
+            answer = answers[i]
+            if answer == None or answer == "" or answer == " ":
                 continue
-            answer = request.form["answer_" + str(i)]
-            correct = False
-            if "correct_" + str(i) in request.form.keys():
-                correct = True
-            sql = "INSERT INTO answers (question_id, answer, correct) " \
-                "VALUES (:question_id, :answer, :correct)"
-            db.session.execute(sql, {"question_id":question_id, \
-                "answer":answer, "correct":correct})
+            correct = corrects[i]
+
+            sql = "INSERT INTO answers (question_id, answer, correct) VALUES(:question_id, :answer, :correct)"
+            db.session.execute(sql, {"question_id":question_id, "answer":answer, "correct":correct})
             db.session.flush()
         db.session.commit()
 
-        if "publish" in request.form:
+        if request.form.get("publish"):
             sql = "UPDATE quizzes SET published=TRUE WHERE id=:quiz_id"
-            db.session.execute(sql, {"quiz_id":session["quiz_id"]})
+            db.session.execute(sql, {"quiz_id":session["create_quiz_id"]})
             db.session.commit()
+
+            session.pop("create_quiz_id", None)
             return redirect("/")
-
-        return render_template("create.html", title_page=False)
-
-    return render_template("create.html", title_page=True)
+        return render_template("create.html", title=title)
+    return render_template("create.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

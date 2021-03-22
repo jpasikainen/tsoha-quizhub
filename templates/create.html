@@ -3,24 +3,20 @@
 {% block content %}
     <h1>{{ error_message }}</h1>
     <form action="/create" method="POST">
-        <input type="text" placeholder="Add title" name="title" value="{{ session.title }}">
+        {% if not title %}
+        <input type="text" placeholder="Add title" name="title" value="{{ title }}">
         <br/>
+        {% endif %}
         <br/>
-        {% for i in range(questions) %}
-            <input type="hidden" name="question_count" value="{{ questions }}">
-            {% set question = session.get("question_" + i|string) %}
-            <input type="text" placeholder="Question" name="question_{{ i }}" {% if question %} value="{{ question }}" {% endif %}>
-            <br/>
-            {% for j in range(4) %}
-                {% set answer = session.get("answer_" + i|string + "_" + j|string) %}
-                {% set correct = session.get("correct_" + i|string + "_" + j|string) %}
-                <input type="text" placeholder="Answer {{ loop.index }}" name="answer_{{ i }}_{{ j }}" {% if answer %} value="{{ answer }}" {% endif %}>
-                <input type="checkbox" name="correct_{{ i }}_{{ j }}" {% if correct %} checked {% endif %}>
-                <label for="correct">Correct</label>
-                <br/>
-            {% endfor %}
+        <input type="text" placeholder="Question" name="question">
+        <br/>
+        {% for j in range(4) %}
+            <input type="text" placeholder="Answer {{ loop.index }}" name="answer_{{ j }}">
+            <input type="checkbox" name="correct_{{ j }}">
+            <label for="correct">Correct</label>
             <br/>
         {% endfor %}
+        <br/>
         <br/>
         <input type="submit" value="Add new question" name="new_question">
         <br/>
