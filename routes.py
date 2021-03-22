@@ -100,7 +100,10 @@ def create():
 
     error_message = None
 
-    if request.method == "POST":        
+    if request.method == "POST":
+        session["create_quiz_page"] = session.get("create_quiz_page", 1) + 1
+        session["create_quiz_pages"] = session.get("create_quiz_pages", 1) + 1
+
         title = request.form.get("title")
         question = request.form.get("question")
 
@@ -137,6 +140,8 @@ def create():
             db.session.commit()
 
             session.pop("create_quiz_id", None)
+            session.pop("create_quiz_page", None)
+            session.pop("create_quiz_pages", None)
             return redirect("/")
         return render_template("create.html", title=title)
     return render_template("create.html")
