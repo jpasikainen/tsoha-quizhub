@@ -233,33 +233,29 @@ def register():
 
 @app.route("/logout")
 def logout():
-    # Logout
+    # Logout and clear the session
     if session.get("username"):
-        session.pop("username", None)
-        session.pop("is_admin", None)
-        session.pop("user_id", None)
+        session.clear()
         return render_template("logout.html")
     return redirect("/")
 
 @app.route("/profile/<string:username>", methods=["POST", "GET"])
 def profile(username):
-    if session.get("user_id"):
-        result = []
-        if session["username"] == username:
-            sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes, published " \
-            "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
-            "WHERE visible=TRUE AND creator_id=:creator_id " \
-            "ORDER BY date DESC"
-            result = db.session.execute(sql, {"creator_id":session["user_id"]}).fetchall()
-        else:
-            sql = "SELECT id FROM users WHERE username=:username"
-            user_id = db.session.execute(sql, {"username":username}).fetchone()[0]
+    result = []
+    if session.get("user_id") and session["username"] == username:
+        sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes, published " \
+        "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
+        "WHERE visible=TRUE AND creator_id=:creator_id " \
+        "ORDER BY date DESC"
+        result = db.session.execute(sql, {"creator_id":session["user_id"]}).fetchall()
+    else:
+        sql = "SELECT id FROM users WHERE username=:username"
+        user_id = db.session.execute(sql, {"username":username}).fetchone()[0]
 
-            sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
-            "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
-            "WHERE visible=TRUE AND published = TRUE AND creator_id=:creator_id " \
-            "ORDER BY date DESC"
-            result = db.session.execute(sql, {"creator_id":user_id}).fetchall()
+        sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
+        "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
+        "WHERE visible=TRUE AND published = TRUE AND creator_id=:creator_id " \
+        "ORDER BY date DESC"
+        result = db.session.execute(sql, {"creator_id":user_id}).fetchall()
 
-        return render_template("profile.html", quizzes=result)
-    return redirect("/")
+    return render_template("profile.html", quizzes=result)
