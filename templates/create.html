@@ -1,37 +1,30 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>{{ error_message }}</h1>
-    Page {{ session.get("create_quiz_page", 1) }} / {{ session.get("create_quiz_pages", 1) }}
     <form action="/create" method="POST">
-        {% if not title %}
-            <input type="text" placeholder="Add title" name="title" value="{{ title }}">
-            <br/>
-        {% endif %}
-        <br/>
-        <input type="text" placeholder="Question" name="question">
-        <br/>
-        {% for j in range(4) %}
-            <input type="text" placeholder="Answer {{ loop.index }}" name="answer_{{ j }}">
-            <input type="checkbox" name="correct_{{ j }}">
-            <label for="correct">Correct</label>
-            <br/>
+        {{ form.csrf_token }}
+        <br><br>
+        {{ form.title.label }} {{ form.title }}
+        <br><br>
+        <br><br>
+        {% for entry in form.questions %}
+            {{ entry.csrf_token }}
+            {{ entry.question.label }} {{ entry.question }}
+            <br><br>
+            {% for answer in entry.answers %}
+                {{ answer.csrf_token }}
+                {% if loop.index == 1 %}
+                    {{ answer.answer.label }} {{ answer.answer(required=true) }}
+                    {{ answer.correct(checked=true, disabled=true) }}
+                {% else %}
+                    {{ answer.answer.label }} {{ answer.answer }}
+                    {{ answer.correct }}
+                {% endif %}
+                <br><br>
+            {% endfor %}
+            <br><br>
         {% endfor %}
-        <br/>
-        <br/>
-        {% if session.get("create_quiz_page", 1) > 1 %}
-            <input type="submit" value="Go to previous" name="previous">
-            <br/>
-            <br/>
-        {% endif %}
-        {% if session.get("create_quiz_page", 1) > session.get("create_quiz_pages", 1) %}
-            <input type="submit" value="Go to next" name="next">
-            <br/>
-            <br/>
-        {% endif %}
-        <input type="submit" value="Add new question" name="new_question">
-        <br/>
-        <br/>
-        <input type="submit" value="Publish!" name="publish">
+        {{ form.submit_button }}
+        {{ form.add_quiz_button }}
     </form>
 {% endblock %}
