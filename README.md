@@ -1,6 +1,14 @@
 # Quizhub
 Database project built with Flask and PostgreSQL for hy-tsoha.
 
+Deployed to heroku at https://tsoha-quizhub.herokuapp.com/ 
+
+Existing accounts:
+| username | password | admin |
+| - | - | - |
+| user | password | False |
+| admin | password | True |
+
 ## Description
 - Generic social media like feed where posts are quizzes
 - A quiz consists of multiple questions and answers to choose from
