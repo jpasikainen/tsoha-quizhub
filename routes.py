@@ -3,29 +3,20 @@ from flask import render_template, request, session, redirect
 from werkzeug.security import check_password_hash, generate_password_hash
 from db import db
 import datetime
-from flask_wtf import FlaskForm
-from wtforms import TextField, BooleanField, FieldList, FormField, SubmitField
-from wtforms.validators import DataRequired
 from create import initialize_form, submit_form
+from index import admin_delete_quiz, get_all_visible_quizzes
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     # Delete button for admins, just hides the tables
     if request.method == "POST" and request.values.get("delete"):
-        quiz_id = request.values.get("quiz_id")
-        sql = "UPDATE quizzes SET visible=FALSE WHERE id=:quiz_id"
-        db.session.execute(sql, {"quiz_id":quiz_id})
-        db.session.commit()
+        admin_delete_quiz(request.values.get("quiz_id"))
 
     # Get all the info required for making a post
     # Get only visible quizzes
-    sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
-        "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
-        "WHERE visible=TRUE AND published=TRUE " \
-        "ORDER BY date DESC"
-    result = db.session.execute(sql).fetchall()
-
-    # Check if user is admin and return False if the cookies is not found
+    result = get_all_visible_quizzes()
+    
+    # Check if user is admin and return False if the cookie is not found
     is_admin = session.get("is_admin", False)
 
     return render_template("index.html", quizzes=result, admin=is_admin)
