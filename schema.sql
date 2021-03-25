@@ -29,6 +29,14 @@ CREATE TABLE answers (
     correct BOOL
 );
 
+CREATE TABLE user_answers (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users ON DELETE CASCADE,
+    question_id INTEGER REFERENCES questions ON DELETE CASCADE,
+    answer_id INTEGER REFERENCES answers ON DELETE CASCADE,
+    session_on BOOL DEFAULT TRUE
+);
+
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,
     quiz_id INTEGER REFERENCES quizzes,
