@@ -5,6 +5,7 @@ from db import db
 import datetime
 from create import initialize_form, submit_form
 from index import admin_delete_quiz, get_all_visible_quizzes
+from quiz import save_answer, get_question, get_answers
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -23,8 +24,32 @@ def index():
 
 @app.route("/quiz/<int:id>", methods=["GET", "POST"])
 def quiz(id):
+    # Must be logged in
+    if not session.get("user_id"):
+        return redirect("/")
+
     # Get the index of the question
-    question_index = int(request.values.get("index", 0))
+    question_index = int(request.values.get("question_index", 0))
+
+    # Save the answer
+    if question_index != 0:
+        user_answer_id = int(request.values.get("user_answer_id"))
+        save_answer(user_answer_id)
+    
+    # Get the question
+    question = get_question(id, question_index)
+    
+    # Get answers and increase index if there's a question
+    if question:
+        session["quiz_question_id"] = question[0]
+        answers = get_answers(question[0])
+        question_index += 1
+    else:
+        return redirect("/results")
+
+    return render_template("quiz.html", question_index=question_index, question=question, answers=answers)
+
+def quizlegacy(id):
     
     # Save answers
     if question_index != 0:
