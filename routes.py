@@ -49,40 +49,6 @@ def quiz(id):
 
     return render_template("quiz.html", question_index=question_index, question=question, answers=answers)
 
-def quizlegacy(id):
-    
-    # Save answers
-    if question_index != 0:
-        user_answer_id = int(request.values.get("user_answer_id"))
-        temp = session["answers"]
-        temp.append(user_answer_id)
-        session["answers"] = temp
-    else:
-        # Save starting time
-        session["start_time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # Reset answers
-        session["answers"] = []
-
-    # Get the question of the index
-    sql = "SELECT id, question FROM questions WHERE quiz_id=:id LIMIT 1 OFFSET :question_index"
-    question = db.session.execute(sql, {"id":id, "question_index":question_index}).fetchone()
-
-    answers = []
-    # Get the answers if there is a question 
-    if question != None:
-        # Get the answers for the question
-        sql = "SELECT answer, id FROM answers WHERE question_id=:question_id"
-        answers = db.session.execute(sql, {"question_id":question[0]}).fetchall()
-    else:
-        # Quiz ended
-        # Write quiz_id only after completing the quiz
-        # This prevents quitting halfway through
-        session["quiz_id"] = id
-        return redirect("/results")
-
-    return render_template("quiz.html", question=question[1], answers=answers, index=question_index)
-
 @app.route("/results", methods=["POST", "GET"])
 def results():
     # Redirect GET requests if no cookies otherwise display previous quiz results
