@@ -1,7 +1,7 @@
 # Quizhub
 Database project built with Flask and PostgreSQL for hy-tsoha.
 
-Deployed to heroku at https://tsoha-quizhub.herokuapp.com/ 
+Deployed to heroku at https://tsoha-quizhub.herokuapp.com/ . Login by pressing "Login/Register" button at top right corner. Use the existing accounts marked belowe or create a new one. After logging in you are redirected to the main page and can now play the quizzes or create one yourself. When entering a quiz, click one of the options to progress. After you have gone through all the questions, you will see the results. When creating a new quiz, enter the title of the quiz and press "Add New Question" at least once. Fill in the fields and either add a new question or press "Publish". Publishing a makes it visible to all the users. 
 
 Existing accounts:
 | username | password | admin |
@@ -29,12 +29,11 @@ Existing accounts:
 ### Quiz (quiz/\<int>.html)
 - [x] **Opens to a new page**
 - [x] **Display a question and multiple choices**
-- [ ] **Add a timer**
 - [x] **Reward points after completion**
 - [ ] **Rate the quiz**
 - [ ] **Add comments**
 - [x] **An admin can remove the quiz**
-- [ ] Correct/Incorrect answers per question (statistics)
+- [x] Correct/Incorrect answers per question (statistics)
 
 ### Create user (register.html)
 - [x] **Form with username and password fields**
