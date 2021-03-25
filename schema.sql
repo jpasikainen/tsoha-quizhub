@@ -32,7 +32,7 @@ CREATE TABLE answers (
 CREATE TABLE user_answers (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users ON DELETE CASCADE,
-    question_id INTEGER REFERENCES questions ON DELETE CASCADE,
+    quiz_id INTEGER REFERENCES quizzes ON DELETE CASCADE,
     answer_id INTEGER REFERENCES answers ON DELETE CASCADE,
     session_on BOOL DEFAULT TRUE
 );

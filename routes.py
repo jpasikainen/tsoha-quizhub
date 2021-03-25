@@ -3,9 +3,11 @@ from flask import render_template, request, session, redirect
 from werkzeug.security import check_password_hash, generate_password_hash
 from db import db
 import datetime
+
 from create import initialize_form, submit_form
 from index import admin_delete_quiz, get_all_visible_quizzes
 from quiz import save_answer, get_question, get_answers
+from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -34,7 +36,7 @@ def quiz(id):
     # Save the answer
     if question_index != 0:
         user_answer_id = int(request.values.get("user_answer_id"))
-        save_answer(user_answer_id)
+        save_answer(user_answer_id, id)
     
     # Get the question
     question = get_question(id, question_index)
@@ -45,12 +47,30 @@ def quiz(id):
         answers = get_answers(question[0])
         question_index += 1
     else:
+        session["quiz_id"] = id
         return redirect("/results")
 
     return render_template("quiz.html", question_index=question_index, question=question, answers=answers)
 
 @app.route("/results", methods=["POST", "GET"])
 def results():
+    # Redirect non logged in users
+    if session.get("user_id", None) == None:
+        return redirect("/")
+    
+    # Get answer ids
+    answer_ids = get_answer_ids()
+
+    # Get the count of correct answers
+    corrects = get_correct_answers_count(answer_ids)
+    total = len(answer_ids)
+    score = round(100 * (corrects / total))
+
+    update_user_answer_session_status(answer_ids)
+
+    return render_template("results.html", correct=corrects, total=total, score=score)
+
+def resultslegacy():
     # Redirect GET requests if no cookies otherwise display previous quiz results
     if request.method == "GET" and "quiz_id" not in session or len(session["answers"]) == 0:
         return redirect("/")
