@@ -5,12 +5,16 @@ from db import db
 from datetime import datetime
 
 from create import initialize_form, submit_form
-from index import admin_delete_quiz, get_all_visible_quizzes
+from index import admin_delete_quiz, get_all_visible_quizzes, end_open_sessions
 from quiz import save_answer, get_question, get_answers
-from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status
+from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status, quiz_on_session
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    # End open sessions
+    if session.get("user_id"):
+        end_open_sessions()
+    
     # Delete button for admins, just hides the tables
     if request.method == "POST" and request.values.get("delete"):
         admin_delete_quiz(request.values.get("quiz_id"))
@@ -37,29 +41,34 @@ def quiz(id):
     if question_index != 0:
         user_answer_id = int(request.values.get("user_answer_id"))
         save_answer(user_answer_id, id)
+    session["previous_question_index"] = question_index
     
     # Get the question
     question = get_question(id, question_index)
     
     # Get answers and increase index if there's a question
     if question:
+        session["previous_question_id"] = session.get("quiz_question_id", None)
         session["quiz_question_id"] = question[0]
         answers = get_answers(question[0])
         question_index += 1
     else:
+        session.pop("previous_question_id", None)
         session["quiz_id"] = id
-        return redirect("/results")
+        return redirect("/results", code=307)
 
     return render_template("quiz.html", question_index=question_index, question=question, answers=answers)
 
-@app.route("/results", methods=["POST", "GET"])
+@app.route("/results", methods=["POST"])
 def results():
     # Redirect non logged in users
-    if session.get("user_id", None) == None:
+    if session.get("user_id", None) == None and request.method == "POST":
         return redirect("/")
     
     # Get answer ids
     answer_ids = get_answer_ids()
+    if len(answer_ids) == 0:
+        return redirect("/")
 
     # Get the count of correct answers
     corrects = get_correct_answers_count(answer_ids)

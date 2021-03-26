@@ -17,3 +17,9 @@ def update_user_answer_session_status(answer_ids):
         "WHERE user_id=:user_id AND answer_id IN :answer_ids"
     db.session.execute(sql, {"user_id":session["user_id"], "answer_ids":tuple(answer_ids)})
     db.session.commit()
+
+def quiz_on_session():
+    sql = "SELECT COUNT(*) FROM user_answers WHERE session_on=TRUE AND user_id=:user_id"
+    result = db.session.execute(sql, {"user_id":session["user_id"]}).fetchone()
+    return True if result else False
+    
