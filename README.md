@@ -53,8 +53,8 @@ Existing accounts:
 - [ ] Human verification before publishing
 
 ### Profile page (profile/\<int>.html)
-- [ ] **Remove a quiz**
-- [ ] **Remove account**
+- [x] **Remove a quiz**
+- [x] **Remove account**
 - [ ] Change password
 
 ![](documentation/images/index.png)
