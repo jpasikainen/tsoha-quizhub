@@ -5,9 +5,6 @@ def save_answer(user_answer_id, quiz_id):
     question_id = session["quiz_question_id"]
     user_id = session["user_id"]
 
-    if session.get("previous_question_id", None) == question_id:
-        return
-
     sql = "INSERT INTO user_answers (user_id, quiz_id, answer_id) " \
         "VALUES(:user_id, :quiz_id, :answer_id)"
     db.session.execute(sql, {"user_id":user_id, "quiz_id":quiz_id, "answer_id":user_answer_id })

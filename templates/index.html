@@ -8,9 +8,6 @@
         <div class="quizzes">
         {% for quiz in quizzes %}
             <div class="quiz">
-                <div class="votes">
-                    ⭐ <br> {{ ((quiz[4] - quiz[5]) / 5)|round }}
-                </div>
                 <div class="quiz-info">
                     <form action={{"quiz/" ~ quiz[1]}} method="POST">
                         <input type="submit" value="{{ quiz[2] }}" class="quiz-title"/>

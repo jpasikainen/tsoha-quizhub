@@ -76,10 +76,6 @@ input {
   white-space: nowrap;
 }
 
-.quiz .votes {
-  margin-right: 16px;
-}
-
 .quiz .quiz-info {
   overflow: hidden;
   white-space: nowrap;

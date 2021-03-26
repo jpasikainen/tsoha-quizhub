@@ -34,6 +34,8 @@ def quiz(id):
     if not session.get("user_id"):
         return redirect("/")
 
+    session["quiz_id"] = id
+    
     # Get the index of the question
     question_index = int(request.values.get("question_index", 0))
 
@@ -54,15 +56,14 @@ def quiz(id):
         question_index += 1
     else:
         session.pop("previous_question_id", None)
-        session["quiz_id"] = id
-        return redirect("/results", code=307)
+        return redirect("/results")
 
     return render_template("quiz.html", question_index=question_index, question=question, answers=answers)
 
-@app.route("/results", methods=["POST"])
+@app.route("/results", methods=["GET", "POST"])
 def results():
     # Redirect non logged in users
-    if session.get("user_id", None) == None and request.method == "POST":
+    if session.get("user_id", None) == None:
         return redirect("/")
     
     # Get answer ids

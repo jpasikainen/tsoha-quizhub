@@ -4,23 +4,20 @@
     <h1>User's {{ session.username }} profile</h1>
     <h3>Quizzes:</h3>
     {% for quiz in quizzes %}
-        <div class="quizzes">
-            <div class="quiz">
-                {% if quiz[6] %}
-                    <p>Published: {{ quiz[6] }}</p>
-                {% endif %}
-                <h3 style="flex: 1;">{{ quiz[0] }}</h3>
-                <h3 style="flex: 2;">{{ quiz[2] }}</h3>
-                <form action={{"quiz/" ~ quiz[1]}} method="POST">
-                    <input type="submit" value="Start Quiz" />
+        <div class="quiz">
+            <div class="quiz-info">
+                <form action={{"/quiz/" ~ quiz[1]}} method="POST">
+                    <input type="submit" value="{{ quiz[2] }}" class="quiz-title"/>
                 </form>
-                {% if admin %}
-                    <form action="/" method="POST">
-                        <input type="submit" value="Delete" name="delete" />
-                        <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
-                    </form>
-                {% endif %}
+                <h4>@{{ quiz[0] }}</h4>
             </div>
+            <h4 class="date">{{ quiz[3].strftime('%Y-%m-%d') }}</h4>
+            {% if admin %}
+                <form action="/" method="POST">
+                    <input type="submit" value="Delete" name="delete" />
+                    <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
+                </form>
+            {% endif %}
         </div>
     {% endfor %}
 {% endblock %}
