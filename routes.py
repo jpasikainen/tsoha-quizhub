@@ -69,35 +69,6 @@ def results():
     update_user_answer_session_status(answer_ids)
 
     return render_template("results.html", correct=corrects, total=total, score=score)
-
-def resultslegacy():
-    # Redirect GET requests if no cookies otherwise display previous quiz results
-    if request.method == "GET" and "quiz_id" not in session or len(session["answers"]) == 0:
-        return redirect("/")
-
-    # Get the title
-    quiz_id = session["quiz_id"]
-    sql = "SELECT title FROM quizzes WHERE id=:quiz_id"
-    title = db.session.execute(sql, {"quiz_id":quiz_id}).fetchone()[0]
-
-    # Check how many correct answers
-    sql = "SELECT COUNT(correct), " \
-        "(SELECT COUNT(correct) FROM answers WHERE id IN :answer_ids AND correct = TRUE) " \
-        "FROM answers WHERE id IN :answer_ids"
-    answers = db.session.execute(sql, {"answer_ids":tuple(session["answers"])}).fetchone()
-    total = answers[0]
-    correct = answers[1]
-
-    # Save score
-    # 100 = full points
-    # Add time effect
-    test_user = 1
-    score = round(100 * (correct / total))
-    sql = "INSERT INTO scores (user_id, quiz_id, score) VALUES (:user_id, :quiz_id, :score)"
-    db.session.execute(sql, {"user_id":test_user, "quiz_id":quiz_id, "score":score})
-    db.session.commit()
-
-    return render_template("results.html", title=title, correct=correct, total=total, score=score)
         
 @app.route("/create", methods=["POST", "GET"])
 def create():
