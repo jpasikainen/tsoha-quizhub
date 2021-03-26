@@ -2,7 +2,7 @@ from app import app
 from flask import render_template, request, session, redirect
 from werkzeug.security import check_password_hash, generate_password_hash
 from db import db
-import datetime
+from datetime import datetime
 
 from create import initialize_form, submit_form
 from index import admin_delete_quiz, get_all_visible_quizzes
@@ -18,7 +18,7 @@ def index():
     # Get all the info required for making a post
     # Get only visible quizzes
     result = get_all_visible_quizzes()
-    
+
     # Check if user is admin and return False if the cookie is not found
     is_admin = session.get("is_admin", False)
 
@@ -109,7 +109,7 @@ def login():
         user = db.session.execute(sql, {"username":username}).fetchone()
         
         if user == None:
-            error_message = "Incorrect username"
+            error_message = "Incorrect username or password"
         else:
             hash_value = user[0]
             if check_password_hash(hash_value, password):
@@ -118,7 +118,7 @@ def login():
                 session["user_id"] = user[2]
                 return redirect("/")
             else:
-                error_message = "Incorrect password"
+                error_message = "Incorrect username or password"
 
     return render_template("login.html", error_message=error_message)
 
@@ -145,7 +145,7 @@ def register():
         sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
         db.session.execute(sql, {"username":username, "password":hash_value})
         db.session.commit()
-        return redirect("/")
+        return redirect("/login")
     
     return render_template("register.html")
 

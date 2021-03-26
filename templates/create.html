@@ -1,6 +1,20 @@
 {% extends "layout.html" %}
 
 {% block content %}
+    <h1>Create a quiz</h1>
+    <h4>Instructions:</h4>
+    <ol>
+        <li>Give quiz a title</li>
+        <li>Name the question</li>
+        <li>Give appropriate answer choices for the question above. 
+            To ensure that there's at least one correct answer, 
+            the first answer is always correct. Answers will be shuffled on quiz</li>
+        <li>Use checkbox on the right hand side of the answer to mark it correct</li>
+        <li>If you want to add more questions, press <strong>"Add new question"</strong> 
+            and repeat from step 2, otherwise 
+            press <strong>"Publish"</strong> </li>
+    </ol>
+
     <form action="/create" method="POST">
         {{ form.csrf_token }}
         <br><br>

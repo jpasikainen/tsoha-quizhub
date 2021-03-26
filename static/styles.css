@@ -4,7 +4,7 @@ body {
 }
 
 main {
-  margin: 0 20%;
+  margin: 16px 20%;
 }
 
 header {
@@ -13,7 +13,7 @@ header {
 }
 
 a {
-  text-decoration: none;
+  text-decoration: underline;
   color: inherit;
 }
 
@@ -21,12 +21,21 @@ input[type="submit"] {
   cursor: pointer;
   height: 2rem;
   border-radius: 8px;
-  background-color: #319795;
-  color: white;
+  background-color: white;
+  color: black;
   font-weight: bold;
   padding: 0 16px;
-  border: none;
+  border-color: black;
   font-size: 16px;
+}
+
+input[type="submit"]:hover {
+  background-color: black;
+  color: white;
+}
+
+input {
+  font-size: 18px;
 }
 
 .error {
@@ -44,23 +53,55 @@ input[type="submit"] {
   letter-spacing: 5px;
 }
 
+.topbar a {
+  text-decoration: none;
+}
+
 .topbar h1 {
   margin: 0;
   padding: 1rem 0;
 }
 
 .quiz {
-  padding: 10px;
-  border: 1px solid black;
-  border-radius: 8px;
+  padding: 0 8px;
+  border-bottom: 1px solid #666666;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
+  margin: 24px 0;
 }
+
+.quiz .date {
+  padding-left: 16px;
+  white-space: nowrap;
+}
+
+.quiz .votes {
+  margin-right: 16px;
+}
+
+.quiz .quiz-info {
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.quiz-title[type="submit"] {
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1.5em;
+  border-radius: 0;
+}
+
+.quiz-title[type="submit"]:hover {
+  color: inherit;
+  background-color: inherit;
+  text-decoration: underline;
 
 @media screen and (max-width: 768px) {
   main {
-    margin: 0 5%;
+    margin: 16px 5%;
   }
 
   .topbar {

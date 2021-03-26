@@ -5,17 +5,19 @@
         <form action="/create" method="GET">
             <input type="submit" value="Create a Quiz!">
         </form>
-    {% else %}
-        <a href="/login">Login / Register to create a Quiz!</a>
-    {% endif %}
         <div class="quizzes">
-            {% for quiz in quizzes %}
+        {% for quiz in quizzes %}
             <div class="quiz">
-                <h3 style="flex: 1;">{{ quiz[0] }}</h3>
-                <h3 style="flex: 2;">{{ quiz[2] }}</h3>
-                <form action={{"quiz/" ~ quiz[1]}} method="POST">
-                    <input type="submit" value="Start Quiz" />
-                </form>
+                <div class="votes">
+                    ⭐ <br> {{ ((quiz[4] - quiz[5]) / 5)|round }}
+                </div>
+                <div class="quiz-info">
+                    <form action={{"quiz/" ~ quiz[1]}} method="POST">
+                        <input type="submit" value="{{ quiz[2] }}" class="quiz-title"/>
+                    </form>
+                    <h4>@{{ quiz[0] }}</h4>
+                </div>
+                <h4 class="date">{{ quiz[3].strftime('%Y-%m-%d') }}</h4>
                 {% if admin %}
                     <form action="/" method="POST">
                         <input type="submit" value="Delete" name="delete" />
@@ -23,6 +25,9 @@
                     </form>
                 {% endif %}
             </div>
+        {% endfor %}
         </div>
-    {% endfor %}
+    {% else %}
+        <a href="/login">Login / Register to create or try out a Quiz!</a>
+    {% endif %}
 {% endblock %}
