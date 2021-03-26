@@ -2,7 +2,8 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
     password TEXT,
-    admin BOOL DEFAULT FALSE
+    admin BOOL DEFAULT FALSE,
+    removed BOOL DEFAULT FALSE
 );
 
 CREATE TABLE quizzes (
@@ -43,12 +44,6 @@ CREATE TABLE comments (
     user_id INTEGER REFERENCES users,
     message TEXT,
     date TIMESTAMP NOT NULL DEFAULT date_trunc('second', NOW()::TIMESTAMP)
-);
-
-CREATE TABLE scores (
-    user_id INTEGER REFERENCES users,
-    quiz_id INTEGER REFERENCES quizzes ON DELETE CASCADE,
-    score INTEGER
 );
 
 CREATE TABLE log (

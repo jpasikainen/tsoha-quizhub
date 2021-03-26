@@ -115,7 +115,7 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT password, admin, id FROM users WHERE username=:username"
+        sql = "SELECT password, admin, id FROM users WHERE username=:username AND removed=FALSE"
         user = db.session.execute(sql, {"username":username}).fetchone()
         
         if user == None:
@@ -170,20 +170,36 @@ def logout():
 @app.route("/profile/<string:username>", methods=["POST", "GET"])
 def profile(username):
     result = []
-    if session.get("user_id") and session["username"] == username:
+    if session.get("user_id", None) != None and session["username"] == username:
         sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes, published " \
         "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
         "WHERE visible=TRUE AND creator_id=:creator_id " \
         "ORDER BY date DESC"
         result = db.session.execute(sql, {"creator_id":session["user_id"]}).fetchall()
+        return render_template("profile.html", quizzes=result, can_remove=True)
     else:
         sql = "SELECT id FROM users WHERE username=:username"
-        user_id = db.session.execute(sql, {"username":username}).fetchone()[0]
+        user_id = db.session.execute(sql, {"username":username}).fetchone()
+
+        if user_id == None:
+            return redirect("/")
 
         sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
         "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
         "WHERE visible=TRUE AND published = TRUE AND creator_id=:creator_id " \
         "ORDER BY date DESC"
-        result = db.session.execute(sql, {"creator_id":user_id}).fetchall()
+        result = db.session.execute(sql, {"creator_id":user_id[0]}).fetchall()
 
     return render_template("profile.html", quizzes=result)
+
+@app.route("/remove_profile", methods=["POST"])
+def remove_profile():
+    if session.get("user_id", None) == None:
+        return redirect("/")
+    
+    sql = "UPDATE users SET removed=TRUE WHERE id=:user_id"
+    db.session.execute(sql, {"user_id":session["user_id"]})
+    db.session.commit()
+
+    session.clear()
+    return redirect("/")
