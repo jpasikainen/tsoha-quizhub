@@ -3,6 +3,7 @@ from flask import render_template, request, session, redirect
 from werkzeug.security import check_password_hash, generate_password_hash
 from db import db
 from datetime import datetime
+import random
 
 from create import initialize_form, submit_form
 from index import admin_delete_quiz, get_all_visible_quizzes, end_open_sessions
@@ -53,6 +54,7 @@ def quiz(id):
         session["previous_question_id"] = session.get("quiz_question_id", None)
         session["quiz_question_id"] = question[0]
         answers = get_answers(question[0])
+        random.shuffle(answers)
         question_index += 1
     else:
         session.pop("previous_question_id", None)
