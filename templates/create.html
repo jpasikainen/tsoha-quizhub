@@ -39,6 +39,9 @@
             <br><br>
         {% endfor %}
         {{ form.submit_button }}
-        {{ form.add_quiz_button }}
+        {{ form.add_question_button }}
+        {% if form.questions|length > 1 %}
+            {{ form.remove_question_button(formnovalidate=True) }}
+        {% endif %}
     </form>
 {% endblock %}

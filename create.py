@@ -16,24 +16,20 @@ class CreateQuizForm(FlaskForm):
     title = TextField("Quiz title:", validators=[DataRequired()])
     questions = FieldList(FormField(QuestionForm))
     submit_button = SubmitField("Publish")
-    add_quiz_button = SubmitField("Add New Question")
-    
-    def __init__(self, *args, **kwargs):
-        questions = kwargs.pop("questions")
-        super(CreateQuizForm, self).__init__(*args, **kwargs)
-        self.questions.min_entries = questions
+    add_question_button = SubmitField("Add New Question")
+    remove_question_button = SubmitField("Remove Last Question")
 
 def initialize_form(request):
-    # Add new FieldSet if add_quiz_button was pressed and save it to a cookie
-    if request.form.get("add_quiz_button", None):
-        session["question_count"] = session.get("question_count", 1) + 1
-        # Create question_count amount of sets
-        form = CreateQuizForm(questions=session.get("question_count", 1))
-        # Add new set if necessary
+    form = CreateQuizForm()
+
+    # Add new FieldSet if add_question_button was pressed
+    if request.form.get("add_question_button"):
         form.questions.append_entry()
         return form
-    
-    form = CreateQuizForm(questions=1)
+    elif request.form.get("remove_question_button"):
+        form.questions.pop_entry()
+        return form
+
     if not request.form.get("submit_button"):
         form.questions.append_entry()
     return form

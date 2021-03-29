@@ -95,7 +95,7 @@ def create():
     # Validate form on submit
     # Doesn't activate if add_quiz_button was pressed because it creates a new set
     # which is not valid
-    if form.validate_on_submit():
+    if request.form.get("submit_button") and form.validate_on_submit():
         data = form.data
         create_form.submit_form(data)
         return redirect("/")
