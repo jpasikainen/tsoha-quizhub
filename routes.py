@@ -4,10 +4,10 @@ from db import db
 from datetime import datetime
 import random
 
-from create import initialize_form, submit_form
 from index import admin_delete_quiz, get_all_visible_quizzes, end_open_sessions
 from quiz import save_answer, get_question, get_answers
 from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status, quiz_on_session
+import create as create_form
 import login as login_form
 import register as register_form
 
@@ -90,14 +90,14 @@ def create():
         return redirect("/")
 
     # Initialize form html
-    form = initialize_form(request)
+    form = create_form.initialize_form(request)
 
     # Validate form on submit
     # Doesn't activate if add_quiz_button was pressed because it creates a new set
     # which is not valid
     if form.validate_on_submit():
         data = form.data
-        submit_form(data)
+        create_form.submit_form(data)
         return redirect("/")
 
     return render_template("create.html", form=form)
