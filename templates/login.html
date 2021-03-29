@@ -1,17 +1,27 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    {% if error_message %}
-        <h1 class="error">{{ error_message }}</h1>
-    {% endif %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
 
     <form action="/login" method="POST">
-        <h4>Username:
-        <input type="text" name="username"></h4>
-        <h4>Password:
-        <input type="password" name="password"></h4>
-        <input type="submit" value="Login">
+        {{ form.hidden_tag() }}
+        <h4>
+            {{ form.username.label }}
+            {{ form.username }}
+        </h4>
+        <h4>
+            {{ form.password.label }}
+            {{ form.password }}
+        </h4>
+        {{ form.login_button }}
     </form>
     <br/>
-    <a href="/register"><strong>New user? Click here to create an account</strong></a>
+    <a href={ url_for("register") }><strong>New user? Click here to create an account</strong></a>
 {% endblock %}

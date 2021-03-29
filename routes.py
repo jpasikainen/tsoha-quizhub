@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, request, session, redirect
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import generate_password_hash
 from db import db
 from datetime import datetime
 import random
@@ -9,6 +9,7 @@ from create import initialize_form, submit_form
 from index import admin_delete_quiz, get_all_visible_quizzes, end_open_sessions
 from quiz import save_answer, get_question, get_answers
 from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status, quiz_on_session
+import login as login_form
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -107,32 +108,20 @@ def login():
     if session.get("username"):
         return redirect("/profile/" + session["username"])
 
-    error_message = None
+    # Initialize form
+    form = login_form.initialize_form()
+    
     # Login
     if request.method == "POST":
         # Check that all the fields are filled
-        if not request.values.get("username") or not request.values.get("password"):
-            return render_template("login.html", error_message="Please fill all the fields")
+        if form.validate_on_submit():
+            username = form.username.data
+            password = form.password.data
 
-        username = request.form["username"]
-        password = request.form["password"]
-
-        sql = "SELECT password, admin, id FROM users WHERE username=:username AND removed=FALSE"
-        user = db.session.execute(sql, {"username":username}).fetchone()
-        
-        if user == None:
-            error_message = "Incorrect username or password"
-        else:
-            hash_value = user[0]
-            if check_password_hash(hash_value, password):
-                session["username"] = username
-                session["is_admin"] = user[1]
-                session["user_id"] = user[2]
+            if login_form.login_successful(username, password):
                 return redirect("/")
-            else:
-                error_message = "Incorrect username or password"
 
-    return render_template("login.html", error_message=error_message)
+    return render_template("login.html", form=form)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
