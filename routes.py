@@ -1,6 +1,5 @@
 from app import app
-from flask import render_template, request, session, redirect
-from werkzeug.security import generate_password_hash
+from flask import render_template, request, session, redirect, url_for
 from db import db
 from datetime import datetime
 import random
@@ -10,6 +9,7 @@ from index import admin_delete_quiz, get_all_visible_quizzes, end_open_sessions
 from quiz import save_answer, get_question, get_answers
 from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status, quiz_on_session
 import login as login_form
+import register as register_form
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -125,30 +125,26 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    # Redirect logged in users
+    if session.get("username"):
+        return redirect("/profile/" + session["username"])
+    
+    # Initialize form
+    form = register_form.initialize_form()
+
     # Register
     if request.method == "POST":
         # Check that all the fields are filled
-        if not request.values.get("username") or not request.values.get("password"):
-            return render_template("register.html", error_message="Please fill all the fields")
-        
-        # Check if username exists already
-        username = request.form["username"]
-        sql = "SELECT COUNT(:username) FROM users WHERE username=:username"
-        result = db.session.execute(sql, {"username":username}).fetchone()[0]
-        
-        if result != 0:
-            error_message = "Username has been taken. Try another one"
-            return render_template("register.html", error_message=error_message)
+        if form.validate_on_submit():
+            username = form.username.data
+            password = form.password.data
 
-        password = request.form["password"]
-
-        hash_value = generate_password_hash(password)
-        sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
-        db.session.execute(sql, {"username":username, "password":hash_value})
-        db.session.commit()
-        return redirect("/login")
+            # Check if username exists already
+            if register_form.username_is_valid(username):
+                register_form.save_credentials(username, password)
+                return redirect(url_for("login"))        
     
-    return render_template("register.html")
+    return render_template("register.html", form=form)
 
 @app.route("/logout")
 def logout():

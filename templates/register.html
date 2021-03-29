@@ -1,15 +1,32 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    {% if error_message %}
-        <h1 class="error">{{ error_message }}</h1>
-    {% endif %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="error">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <form action="/register" method="POST">
-        <h4>Username:
-        <input type="text" name="username"></h4>
-        <h4>Password:
-        <input type="password" name="password"></h4>
-        <input type="submit" value="Register">
+        {{ form.hidden_tag() }}
+        <h4>
+            {{ form.username.label }}
+            {{ form.username }}
+            {{ form.username.errors[0] if form.username.errors }}
+        </h4>
+        <h4>
+            {{ form.password.label }}
+            {{ form.password }}
+            {{ form.password.errors[0] if form.password.errors }}
+        </h4>
+        <h4>
+            {{ form.confirm.label }}
+            {{ form.confirm }}
+        </h4>
+        {{ form.register_button }}
     </form>
 {% endblock %}

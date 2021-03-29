@@ -3,9 +3,11 @@
 {% block content %}
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
+            <div class="error">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
         {% endif %}
     {% endwith %}
     
@@ -15,13 +17,15 @@
         <h4>
             {{ form.username.label }}
             {{ form.username }}
+            {{ form.username.errors[0] if form.username.errors }}
         </h4>
         <h4>
             {{ form.password.label }}
             {{ form.password }}
+            {{ form.password.errors[0] if form.password.errors }}
         </h4>
         {{ form.login_button }}
     </form>
     <br/>
-    <a href={ url_for("register") }><strong>New user? Click here to create an account</strong></a>
+    <a href={{ url_for('register') }}><strong>New user? Click here to create an account</strong></a>
 {% endblock %}
