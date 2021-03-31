@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    {{ form.data }}
+    
+    <h1>Create a quiz</h1>
+    <h4>Instructions:</h4>
+    <ol>
+        <li>Give quiz a title</li>
+        <li>Name the question</li>
+        <li>Give appropriate answer choices for the question above. 
+            To ensure that there's at least one correct answer, 
+            the first answer is always correct. Answers will be shuffled on quiz</li>
+        <li>Use checkbox on the right hand side of the answer to mark it correct</li>
+        <li>If you want to add more questions, press <strong>"Add new question"</strong> 
+            and repeat from step 2, otherwise 
+            press <strong>"Publish"</strong> </li>
+    </ol>
+
+    <form action="/edit" method="POST">
+        {{ form.csrf_token }}
+        <br><br>
+        {{ form.title.label }} {{ form.title }}
+        <br><br>
+        <br><br>
+        {% for entry in form.questions %}
+            {{ entry.csrf_token }}
+            {{ entry.question.label }} {{ entry.question }}
+            <br><br>
+            {% for answer in entry.answers %}
+                {{ answer.csrf_token }}
+                {% if loop.index == 1 %}
+                    {{ answer.answer.label }} {{ answer.answer(required=true) }}
+                    {{ answer.correct(checked=true, disabled=true) }}
+                {% else %}
+                    {{ answer.answer.label }} {{ answer.answer }}
+                    {{ answer.correct }}
+                {% endif %}
+                <br><br>
+            {% endfor %}
+            <br><br>
+        {% endfor %}
+        {{ form.submit_button }}
+        {{ form.add_question_button }}
+        {% if form.questions|length > 1 %}
+            {{ form.remove_question_button(formnovalidate=True) }}
+        {% endif %}
+    </form>
+{% endblock %}

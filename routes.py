@@ -10,6 +10,7 @@ from results import get_answer_ids, get_correct_answers_count, update_user_answe
 import create as create_form
 import login as login_form
 import register as register_form
+import edit as edit_form
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -101,6 +102,23 @@ def create():
         return redirect("/")
 
     return render_template("create.html", form=form)
+
+@app.route("/edit", methods=["POST", "GET"])
+def edit():
+    # User is not logged in
+    if session.get("user_id", None) == None:
+        return redirect("/")
+    
+    id = request.values.get("quiz_id")
+    form = edit_form.initialize_form(request, id)
+    #return str(form.data)
+
+    if request.form.get("submit_button") and form.validate_on_submit():
+        data = form.data
+        create_form.submit_form(data)
+        return redirect("/")
+
+    return render_template("edit.html", form=form, data=form.data)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
