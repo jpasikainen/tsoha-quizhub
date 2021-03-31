@@ -111,7 +111,6 @@ def edit():
     
     id = request.values.get("quiz_id")
     form = edit_form.initialize_form(request, id)
-    #return str(form.data)
 
     if request.form.get("submit_button") and form.validate_on_submit():
         data = form.data

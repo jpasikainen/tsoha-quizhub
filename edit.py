@@ -23,37 +23,26 @@ class CreateQuizForm(FlaskForm):
 def initialize_form(request, id):
     # Populate fields
     #if request.method == "GET":
-    data = populate(id)
-    form = CreateQuizForm(title=data.get("title"))
-
-    for question in data.get("questions"):
-        form.questions.append_entry(question)
-    #form.questions.append_entry(data.get("questions"))
-
+    form = populate(id)
 
     # Add new FieldSet if add_question_button was pressed
-    """ if request.form.get("add_question_button"):
+    if request.form.get("add_question_button"):
         form.questions.append_entry()
         return form
     elif request.form.get("remove_question_button"):
         form.questions.pop_entry()
-        return form """
+        return form
 
-    #if not request.form.get("submit_button"):
-    #    form.questions.append_entry()
     return form
 
 def populate(id):
-    data = {}
-    
     sql = "SELECT title FROM quizzes WHERE id=:quiz_id"
     title = db.session.execute(sql, {"quiz_id":id}).fetchone()[0]
-    data.update({"title":title})
+    form = CreateQuizForm(title=title)
 
     sql = "SELECT id, question FROM questions WHERE quiz_id=:quiz_id"
     questions = db.session.execute(sql, {"quiz_id":id}).fetchall()
     
-    questions_data = {}
     for question in questions:
         question_text = question[1]
         sql = "SELECT answer, correct FROM answers WHERE question_id=:question_id"
@@ -62,10 +51,9 @@ def populate(id):
         for answer in answers:
             answers_data.append({"answer":answer[0], "correct":answer[1]})
         
-        questions_data.update({"question":question_text, "answers":answers_data})
-    data.update({"questions":[questions_data]})
+        form.questions.append_entry({"question":question_text, "answers":answers_data})
 
-    return MultiDict(data)
+    return form
 
 def submit_form(data):
     title = data["title"]
