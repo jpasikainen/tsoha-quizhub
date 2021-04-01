@@ -22,8 +22,9 @@ class CreateQuizForm(FlaskForm):
 
 def initialize_form(request, id):
     # Populate fields
-    #if request.method == "GET":
-    form = populate(id)
+    form = CreateQuizForm()
+    if id:
+        form = populate(id)
 
     # Add new FieldSet if add_question_button was pressed
     if request.form.get("add_question_button"):
@@ -55,7 +56,13 @@ def populate(id):
 
     return form
 
-def submit_form(data):
+def save_form(data):
+    # It is much easier to delete the old quiz and replace it with a new entry
+    sql = "UPDATE quizzes SET published=FALSE, visible=FALSE WHERE id=:quiz_id"
+    db.session.execute(sql, {"quiz_id":session["edit_quiz_id"]})
+    db.session.flush()
+    session.pop("edit_quiz_id")
+
     title = data["title"]
     questions_data = data["questions"]
 

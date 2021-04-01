@@ -110,11 +110,14 @@ def edit():
         return redirect("/")
     
     id = request.values.get("quiz_id")
+    if id:
+        session["edit_quiz_id"] = id
+
     form = edit_form.initialize_form(request, id)
 
     if request.form.get("submit_button") and form.validate_on_submit():
         data = form.data
-        create_form.submit_form(data)
+        edit_form.save_form(data)
         return redirect("/")
 
     return render_template("edit.html", form=form, data=form.data)
