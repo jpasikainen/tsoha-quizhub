@@ -1,7 +1,13 @@
 # Quizhub
-Database project built with Flask and PostgreSQL for hy-tsoha.
+Database project built with Flask and PostgreSQL for [hy-tsoha](https://hy-tsoha.github.io/materiaali/index).
 
-Deployed to heroku at https://tsoha-quizhub.herokuapp.com/ . Login by pressing "Login/Register" button at top right corner. Use the existing accounts marked belowe or create a new one. After logging in you are redirected to the main page and can now play the quizzes or create one yourself. When entering a quiz, click one of the options to progress. After you have gone through all the questions, you will see the results. When creating a new quiz, enter the title of the quiz and press "Add New Question" at least once. Fill in the fields and either add a new question or press "Publish". Publishing a makes it visible to all the users. 
+Deployed to heroku at https://tsoha-quizhub.herokuapp.com/ . Login by pressing "Login/Register" button at top right corner. Use the existing accounts marked belowe or create a new one. After logging in you are redirected to the main page and can now play the quizzes or create one yourself.
+
+When entering a quiz, click one of the options to progress. After you have gone through all the questions, you will see the results.
+
+When creating a new quiz, input a title, a questions, and at least one answer. Either add a new question and fill in the fields or press "Publish". Publishing a makes it visible to all the users.
+
+By clicking on your name, you enter a profile view. There you can delete your account, remove a quiz, or edit one. Deleting the account doesn't remove quizzes.
 
 Existing accounts:
 | username | password | admin |
@@ -55,6 +61,7 @@ Existing accounts:
 ### Profile page (profile/\<int>.html)
 - [x] **Remove a quiz**
 - [x] **Remove account**
+- [x] **Edit a quiz**
 - [ ] Change password
 
 ![](documentation/images/index.png)
