@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>Create a quiz</h1>
+    <h1>Edit a quiz</h1>
     <h4>Instructions:</h4>
     <ol>
         <li>Give quiz a title</li>
@@ -29,10 +29,10 @@
                 {{ answer.csrf_token }}
                 {% if loop.index == 1 %}
                     {{ answer.answer.label }} {{ answer.answer(required=true) }}
-                    {{ answer.correct(checked=true, disabled=true) }}
+                    {{ answer.correct(checked=true, disabled=true) }} Correct
                 {% else %}
                     {{ answer.answer.label }} {{ answer.answer }}
-                    {{ answer.correct }}
+                    {{ answer.correct }} Correct
                 {% endif %}
                 <br><br>
             {% endfor %}
