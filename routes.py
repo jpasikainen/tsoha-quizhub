@@ -185,7 +185,7 @@ def profile(username):
         result = db.session.execute(sql, {"creator_id":session["user_id"]}).fetchall()
         return render_template("profile.html", quizzes=result, can_remove=True, username=username)
     else:
-        sql = "SELECT id FROM users WHERE username=:username"
+        sql = "SELECT id FROM users WHERE username=:username AND removed=FALSE"
         user_id = db.session.execute(sql, {"username":username}).fetchone()
 
         if user_id == None:
