@@ -1,12 +1,16 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>User's {{ session.username }} profile</h1>
-    <form action="/remove_profile" method="POST">
-        <input type="submit" value="Remove account permanently">
-    </form>
+    <h1>User's {{ username }} profile</h1>
+    {% if can_remove %}
+        <form action="/remove_profile" method="POST">
+            <input class="danger" type="submit" value="Remove account permanently">
+        </form>
+    {% endif %}
 
-    <h3>Quizzes:</h3>
+    {% if quizzes|length > 0 %}
+        <h2>Quizzes created by {{ username }}:</h2>
+    {% endif %}
     {% for quiz in quizzes %}
         <div class="quiz">
             <div class="quiz-info">
@@ -16,19 +20,19 @@
                 <h4>@{{ quiz[0] }}</h4>
             </div>
             <h4 class="date">{{ quiz[3].strftime('%Y-%m-%d') }}</h4>
-            <div style="margin-left:16px;">
-                {% if can_remove %}
-                <form action="/" method="POST">
-                    <input type="submit" value="Delete" name="delete" />
-                    <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
-                </form>
-                <br>
-                <form action="/edit" method="POST">
-                    <input type="submit" value="Edit" name="edit" />
-                    <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
-                </form>
-                {% endif %}
-            </div>
+            {% if can_remove %}
+                <div style="margin-left:16px;">
+                    <form action="/" method="POST">
+                        <input class="danger" type="submit" value="Delete" name="delete" />
+                        <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
+                    </form>
+                    <br>
+                    <form action="/edit" method="POST">
+                        <input type="submit" value="Edit" name="edit" />
+                        <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
+                    </form>
+                </div>
+            {% endif %}
         </div>
     {% endfor %}
 {% endblock %}

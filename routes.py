@@ -183,7 +183,7 @@ def profile(username):
         "WHERE visible=TRUE AND creator_id=:creator_id " \
         "ORDER BY date DESC"
         result = db.session.execute(sql, {"creator_id":session["user_id"]}).fetchall()
-        return render_template("profile.html", quizzes=result, can_remove=True)
+        return render_template("profile.html", quizzes=result, can_remove=True, username=username)
     else:
         sql = "SELECT id FROM users WHERE username=:username"
         user_id = db.session.execute(sql, {"username":username}).fetchone()
@@ -197,7 +197,7 @@ def profile(username):
         "ORDER BY date DESC"
         result = db.session.execute(sql, {"creator_id":user_id[0]}).fetchall()
 
-    return render_template("profile.html", quizzes=result)
+    return render_template("profile.html", quizzes=result, username=username)
 
 @app.route("/remove_profile", methods=["POST"])
 def remove_profile():

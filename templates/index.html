@@ -16,10 +16,12 @@
                 </div>
                 <h4 class="date">{{ quiz[3].strftime('%Y-%m-%d') }}</h4>
                 {% if admin %}
-                    <form action="/" method="POST">
-                        <input type="submit" value="Delete" name="delete" />
-                        <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
-                    </form>
+                    <div style="margin-left:16px;">
+                        <form action="/" method="POST">
+                            <input type="submit" value="Delete" name="delete" />
+                            <input type="hidden" name="quiz_id" value={{ quiz[1] }} />
+                        </form>
+                    </div>
                 {% endif %}
             </div>
         {% endfor %}
