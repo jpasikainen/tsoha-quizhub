@@ -14,7 +14,11 @@
                     </form>
                     <h4>@{{ quiz[0] }}</h4>
                 </div>
-                <h4 class="date">{{ quiz[3].strftime('%Y-%m-%d') }}</h4>
+                {% if quiz[3] == 0 %}
+                    <h4 class="date">Now</h4>
+                {% else %}
+                    <h4 class="date">{{ quiz[3] }} days ago</h4>
+                {% endif %}
                 {% if admin %}
                     <div style="margin-left:16px;">
                         <form action="/" method="POST">
