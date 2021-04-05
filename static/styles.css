@@ -1,6 +1,9 @@
 body {
   margin: 0;
   font-family: "Helvetica", sans-serif;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 main {
@@ -10,6 +13,15 @@ main {
 header {
   width: 100%;
   box-shadow: 0 1px 3px rgba(34, 34, 34, 0.2);
+}
+
+footer {
+  width: 100%;
+  box-shadow: 0 -1px 3px rgba(34, 34, 34, 0.2);
+}
+
+.footer {
+  margin: auto 20%;
 }
 
 a {
@@ -107,7 +119,8 @@ input {
     margin: 16px 5%;
   }
 
-  .topbar {
+  .topbar,
+  .footer {
     margin: 0 5%;
   }
 }
