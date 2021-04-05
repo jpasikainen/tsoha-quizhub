@@ -41,9 +41,11 @@ def quiz(id):
     
     # Get the index of the question
     question_index = int(request.values.get("question_index", 0))
+    if question_index == 0:
+        session.pop("previous_question_index", None)
 
-    # Save the answer
-    if question_index != 0:
+    # Save the answer if it hasn't already been saved
+    if question_index != 0 and session.get("previous_question_index", None) != question_index:
         user_answer_id = int(request.values.get("user_answer_id"))
         save_answer(user_answer_id, id)
     session["previous_question_index"] = question_index
@@ -53,13 +55,11 @@ def quiz(id):
     
     # Get answers and increase index if there's a question
     if question:
-        session["previous_question_id"] = session.get("quiz_question_id", None)
+        question_index += 1
         session["quiz_question_id"] = question[0]
         answers = get_answers(question[0])
         random.shuffle(answers)
-        question_index += 1
     else:
-        session.pop("previous_question_id", None)
         return redirect("/results")
 
     return render_template("quiz.html", question_index=question_index, question=question, answers=answers)
