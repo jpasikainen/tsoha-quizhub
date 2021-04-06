@@ -2,18 +2,26 @@
 
 {% block content %}
     <h2>Global Statistics</h2>
-    <div style="width:10em;border-bottom:1px solid black;">Correct</div>
-    <table style="border-collapse: separate; border-spacing: 0 1em;border-left:1px solid black;">
-        {% for item in stats %}
-        <tr style="background-color:black;">
-            <td style="color:white;">Question {{ loop.index }}</td>
-            {% set count = item[0]/item[1]*10 %}
-            {% for _ in range(count|round|int ) %}
-                <td>&nbsp;</td>
+    <div style="width:11em;border-bottom:1px solid black;">Correct</div>
+    <div>
+        <table style="border-spacing: 0 1em;position:absolute; color:white; margin-left:0.5em;">
+            {% for item in stats %}
+            <tr>
+                <td>{{ loop.index }}</td>
+            </tr>
             {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
+        </table>
+        <table style="border-collapse: separate; border-spacing: 0 1em;border-left:1px solid black;">
+            {% for item in stats %}
+            <tr style="background-color:black;">
+                {% set count = item[0]/item[1]*10 %}
+                {% for _ in range(count|round|int ) %}
+                <td style="width:1em">&nbsp;</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 
     <h3>You got {{ correct }} / {{ total }}</h3>
     <h3>Score: {{ score }}</h3>
