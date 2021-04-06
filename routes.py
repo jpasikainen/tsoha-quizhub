@@ -4,20 +4,16 @@ from db import db
 from datetime import datetime
 import random
 
-from index import admin_delete_quiz, get_all_visible_quizzes, end_open_sessions
-from quiz import save_answer, get_question, get_answers
+from index import admin_delete_quiz, get_all_visible_quizzes
 from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status, quiz_on_session
+import quiz as quiz_functions
 import create as create_form
 import login as login_form
 import register as register_form
 import edit as edit_form
 
 @app.route("/", methods=["GET", "POST"])
-def index():
-    # End open sessions
-    if session.get("user_id"):
-        end_open_sessions()
-    
+def index():    
     # Delete button for admins, just hides the tables
     if request.method == "POST" and request.values.get("delete"):
         admin_delete_quiz(request.values.get("quiz_id"))
@@ -43,21 +39,23 @@ def quiz(id):
     question_index = int(request.values.get("question_index", 0))
     if question_index == 0:
         session.pop("previous_question_index", None)
+        # End open sessions
+        quiz_functions.end_open_sessions()
 
     # Save the answer if it hasn't already been saved
     if question_index != 0 and session.get("previous_question_index", None) != question_index:
         user_answer_id = int(request.values.get("user_answer_id"))
-        save_answer(user_answer_id, id)
+        quiz_functions.save_answer(user_answer_id, id)
     session["previous_question_index"] = question_index
     
     # Get the question
-    question = get_question(id, question_index)
+    question = quiz_functions.get_question(id, question_index)
     
     # Get answers and increase index if there's a question
     if question:
         question_index += 1
         session["quiz_question_id"] = question[0]
-        answers = get_answers(question[0])
+        answers = quiz_functions.get_answers(question[0])
         random.shuffle(answers)
     else:
         return redirect("/results")
@@ -209,4 +207,19 @@ def remove_profile():
     db.session.commit()
 
     session.clear()
+    return redirect("/")
+
+@app.route("/vote", methods=["POST"])
+def vote():
+    if not session.get("user_id"):
+        return redirect("/")
+    
+    if request.form.get("upvote"):
+        sql = "UPDATE quizzes SET upvotes=upvotes + 1 WHERE id=:quiz_id"
+        db.session.execute(sql, {"quiz_id":quiz_id})
+    elif request.form.get("downvote"):
+        pass
+
+    db.session.commit()
+    
     return redirect("/")

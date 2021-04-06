@@ -1,6 +1,11 @@
 from db import db
 from flask import session
 
+def end_open_sessions():
+    sql = "UPDATE user_answers SET session_on=FALSE WHERE user_id=:user_id AND quiz_id=:quiz_id"
+    db.session.execute(sql, {"user_id":session["user_id"], "quiz_id":session["quiz_id"]})
+    db.session.commit()
+
 def save_answer(user_answer_id, quiz_id):
     question_id = session["quiz_question_id"]
     user_id = session["user_id"]
