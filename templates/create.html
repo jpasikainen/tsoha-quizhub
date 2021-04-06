@@ -18,15 +18,19 @@
     <form action="/create" method="POST">
         {{ form.csrf_token }}
         <br><br>
-        {{ form.title.label }} {{ form.title }}
+        {{ form.title.label }} {{ form.title }} {{ form.title.errors[0] if form.title.errors }}
         <br><br>
         <br><br>
         {% for entry in form.questions %}
             {{ entry.csrf_token }}
-            {{ entry.question.label }} {{ entry.question }}
+            {{ entry.question.label }} {{ entry.question }} {{ entry.question.errors[0] if entry.question.errors }}
             <br><br>
             {% for answer in entry.answers %}
                 {{ answer.csrf_token }}
+                {% if answer.answer.errors %}
+                    {{answer.answer.errors[0] }}
+                    <br>
+                {% endif %}
                 {% if loop.index == 1 %}
                     {{ answer.answer.label }} {{ answer.answer(required=true) }}
                     {{ answer.correct(checked=true, disabled=true) }} Correct

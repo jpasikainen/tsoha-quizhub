@@ -1,19 +1,19 @@
 from flask import session
 from flask_wtf import FlaskForm
 from wtforms import TextField, BooleanField, FieldList, FormField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Length
 from db import db
 
 class AnswerForm(FlaskForm):
-    answer = TextField("Answer:")
+    answer = TextField("Answer:", validators=[Length(max=50)])
     correct = BooleanField("Correct")
 
 class QuestionForm(FlaskForm):
-    question = TextField("Question:", validators=[DataRequired()])
+    question = TextField("Question:", validators=[DataRequired(), Length(min=1, max=50)])
     answers = FieldList(FormField(AnswerForm), min_entries=4)
 
 class CreateQuizForm(FlaskForm):
-    title = TextField("Quiz title:", validators=[DataRequired()])
+    title = TextField("Quiz title:", validators=[DataRequired(), Length(min=1, max=30)])
     questions = FieldList(FormField(QuestionForm))
     submit_button = SubmitField("Publish")
     add_question_button = SubmitField("Add New Question")
