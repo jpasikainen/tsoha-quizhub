@@ -15,6 +15,8 @@ Existing accounts:
 | user | password | False |
 | admin | password | True |
 
+The site is protected from SQL-injection, XSS and CSRF vulnerabilities. SQL queries take variables as parameters. XSS is taken care of by Flask's render_template and FlaskWTF does CSRF checking with validate_on_submit().
+
 ## Description
 - Generic social media like feed where posts are quizzes
 - A quiz consists of multiple questions and answers to choose from
