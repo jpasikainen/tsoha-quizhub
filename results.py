@@ -2,6 +2,8 @@ from db import db
 from flask import session
 
 def get_answer_ids():
+    if not session.get("quiz_id"):
+        return []
     sql = "SELECT answer_id FROM user_answers " \
         "WHERE user_id=:user_id AND quiz_id=:quiz_id AND session_on=TRUE"
     answers = db.session.execute(sql, {"user_id":session["user_id"], "quiz_id":session["quiz_id"]}).fetchall()
