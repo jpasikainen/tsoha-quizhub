@@ -24,4 +24,20 @@ def quiz_on_session():
     sql = "SELECT COUNT(*) FROM user_answers WHERE session_on=TRUE AND user_id=:user_id"
     result = db.session.execute(sql, {"user_id":session["user_id"]}).fetchone()
     return True if result else False
+
+def get_all_results():
+    sql = "SELECT id FROM questions WHERE quiz_id=:quiz_id"
+    questions = db.session.execute(sql, {"quiz_id":session["quiz_id"]}).fetchall()
+    questions = [i for (i,) in questions]
     
+    stats = []
+    for question in questions:
+        sql = "SELECT COUNT(*) FROM user_answers WHERE answer_id IN " \
+            "(SELECT id FROM answers WHERE question_id=:question_id)"
+        t = db.session.execute(sql, {"question_id":question}).fetchone()[0]
+        sql = "SELECT COUNT(*) FROM user_answers WHERE answer_id IN " \
+            "(SELECT id FROM answers WHERE question_id=:question_id AND correct=TRUE)"
+        c = db.session.execute(sql, {"question_id":question}).fetchone()[0]
+        stats.append([c, t])
+    
+    return stats

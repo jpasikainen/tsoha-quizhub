@@ -5,7 +5,7 @@ from datetime import datetime
 import random
 
 import index as index_functions
-from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status, quiz_on_session
+import results as results_functions
 import quiz as quiz_functions
 import create as create_form
 import login as login_form
@@ -71,18 +71,20 @@ def results():
         return redirect("/")
     
     # Get answer ids
-    answer_ids = get_answer_ids()
+    answer_ids = results_functions.get_answer_ids()
     if len(answer_ids) == 0:
         return redirect("/")
 
     # Get the count of correct answers
-    corrects = get_correct_answers_count(answer_ids)
+    corrects = results_functions.get_correct_answers_count(answer_ids)
     total = len(answer_ids)
     score = round(100 * (corrects / total))
 
-    update_user_answer_session_status(answer_ids)
+    results_functions.update_user_answer_session_status(answer_ids)
 
-    return render_template("results.html", correct=corrects, total=total, score=score)
+    stats = results_functions.get_all_results()
+
+    return render_template("results.html", correct=corrects, total=total, score=score, stats=stats)
         
 @app.route("/create", methods=["POST", "GET"])
 def create():

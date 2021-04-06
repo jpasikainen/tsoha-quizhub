@@ -1,8 +1,21 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <h3>{{ correct }} / {{ total }}</h3>
+    <h2>Global Statistics</h2>
+    <div style="width:10em;border-bottom:1px solid black;">Correct</div>
+    <table style="border-collapse: separate; border-spacing: 0 1em;border-left:1px solid black;">
+        {% for item in stats %}
+        <tr style="background-color:black;">
+            <td style="color:white;">Question {{ loop.index }}</td>
+            {% set count = item[0]/item[1]*10 %}
+            {% for _ in range(count|round|int ) %}
+                <td>&nbsp;</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>You got {{ correct }} / {{ total }}</h3>
     <h3>Score: {{ score }}</h3>
     
     <p>Review the Quiz:</p>
