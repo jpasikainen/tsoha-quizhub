@@ -15,9 +15,11 @@
                     <h4>@{{ quiz[0] }}</h4>
                 </div>
                 {% if quiz[3] == 0 %}
-                    <h4 class="date">Now</h4>
+                    <h4 class="date">Today</h4>
+                {% elif quiz[3] == 1 %}
+                    <h4 class="date">{{ quiz[3] }} day ago</h4>
                 {% else %}
-                    <h4 class="date">{{ quiz[3] }} days ago</h4>
+                <h4 class="date">{{ quiz[3] }} days ago</h4>
                 {% endif %}
                 {% if admin %}
                     <div style="margin-left:16px;">
