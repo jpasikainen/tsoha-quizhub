@@ -4,6 +4,15 @@
     <h1>{{ title }}</h1>
     <h3>{{ correct }} / {{ total }}</h3>
     <h3>Score: {{ score }}</h3>
+    
+    <p>Review the Quiz:</p>
+    <form action="/vote" method="POST">
+        <input type="submit" value="Upvote" name="upvote" />
+        <input type="submit" value="Downvote" name="downvote" />
+    </form>
+    
+    <br><br>
+
     <a href="/quiz/{{ session.quiz_id }}">Click to Retry</a>
     <p>or</p>
     <a href="/">Click to Return</a>

@@ -12,8 +12,6 @@ CREATE TABLE quizzes (
     title TEXT,
     date TIMESTAMP NOT NULL DEFAULT date_trunc('second', NOW()::TIMESTAMP),
     published BOOL DEFAULT FALSE,
-    upvotes INTEGER DEFAULT 0,
-    downvotes INTEGER DEFAULT 0,
     visible BOOL DEFAULT TRUE
 );
 
@@ -51,4 +49,11 @@ CREATE TABLE log (
     date TIMESTAMP NOT NULL DEFAULT date_trunc('second', NOW()::TIMESTAMP),
     user_id INTEGER,
     action TEXT
+);
+
+CREATE TABLE votes (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users,
+    quiz_id INTEGER REFERENCES quizzes ON DELETE CASCADE,
+    liked BOOL
 );

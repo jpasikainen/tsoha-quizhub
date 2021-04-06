@@ -4,7 +4,7 @@ from db import db
 from datetime import datetime
 import random
 
-from index import admin_delete_quiz, get_all_visible_quizzes
+import index as index_functions
 from results import get_answer_ids, get_correct_answers_count, update_user_answer_session_status, quiz_on_session
 import quiz as quiz_functions
 import create as create_form
@@ -16,16 +16,18 @@ import edit as edit_form
 def index():    
     # Delete button for admins, just hides the tables
     if request.method == "POST" and request.values.get("delete"):
-        admin_delete_quiz(request.values.get("quiz_id"))
+        index_functions.admin_delete_quiz(request.values.get("quiz_id"))
 
     # Get all the info required for making a post
     # Get only visible quizzes
-    result = get_all_visible_quizzes()
+    result = index_functions.get_all_visible_quizzes()
 
     # Check if user is admin and return False if the cookie is not found
     is_admin = session.get("is_admin", False)
 
-    return render_template("index.html", quizzes=result, admin=is_admin)
+    votes = index_functions.get_votes(result)
+
+    return render_template("index.html", quizzes=result, admin=is_admin, votes=votes)
 
 @app.route("/quiz/<int:id>", methods=["GET", "POST"])
 def quiz(id):
@@ -214,12 +216,19 @@ def vote():
     if not session.get("user_id"):
         return redirect("/")
     
+    liked = False
     if request.form.get("upvote"):
-        sql = "UPDATE quizzes SET upvotes=upvotes + 1 WHERE id=:quiz_id"
-        db.session.execute(sql, {"quiz_id":quiz_id})
-    elif request.form.get("downvote"):
-        pass
+        liked = True
+    
+    # Check if there is an answer already
+    sql = "SELECT COUNT(*) FROM votes WHERE user_id=:user_id AND quiz_id=:quiz_id"
+    has_voted = db.session.execute(sql, {"user_id":session["user_id"], "quiz_id":session["quiz_id"]}).fetchone()[0]
 
+    if has_voted:
+        sql = "UPDATE votes SET liked=:liked WHERE user_id=:user_id AND quiz_id=:quiz_id"
+    else:
+        sql = "INSERT INTO votes (user_id, quiz_id, liked) VALUES(:user_id, :quiz_id, :liked)"
+    db.session.execute(sql, {"quiz_id":session["quiz_id"], "user_id":session["user_id"], "liked":liked})
     db.session.commit()
     
     return redirect("/")
