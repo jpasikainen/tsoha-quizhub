@@ -1,12 +1,13 @@
 from flask import session, flash
 from flask_wtf import FlaskForm
 from wtforms import TextField, SubmitField, PasswordField
-from wtforms.validators import DataRequired, EqualTo, Length
+from wtforms.validators import DataRequired, EqualTo, Length, Regexp
 from werkzeug.security import generate_password_hash
 from db import db
 
 class RegisterForm(FlaskForm):
-    username = TextField("Username:", validators=[DataRequired(), Length(min=3, max=15)])
+    username = TextField("Username:", validators=[DataRequired(), Length(min=3, max=15), \
+        Regexp("^([a-zA-Z0-9 _!.,-]+)$", message="Only alphanumeric and !_., characters are allowed")])
     password = PasswordField("Password:", validators=[DataRequired(), \
         EqualTo('confirm', message='Passwords must match'), Length(min=7, max=30)])
     confirm = PasswordField("Confirm", validators=[DataRequired()])
