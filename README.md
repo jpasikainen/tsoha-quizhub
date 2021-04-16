@@ -38,10 +38,10 @@ The site is protected from SQL-injection, XSS and CSRF vulnerabilities. SQL quer
 - [x] **Opens to a new page**
 - [x] **Display a question and multiple choices**
 - [x] **Reward points after completion**
-- [ ] **Rate the quiz**
-- [ ] **Add comments**
+- [x] **Rate the quiz**
 - [x] **An admin can remove the quiz**
 - [x] Correct/Incorrect answers per question (statistics)
+- [ ] Add comments
 
 ### Create user (register.html)
 - [x] **Form with username and password fields**

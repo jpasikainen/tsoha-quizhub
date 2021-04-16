@@ -36,21 +36,6 @@ CREATE TABLE user_answers (
     session_on BOOL DEFAULT TRUE
 );
 
-CREATE TABLE comments (
-    id SERIAL PRIMARY KEY,
-    quiz_id INTEGER REFERENCES quizzes,
-    user_id INTEGER REFERENCES users,
-    message TEXT,
-    date TIMESTAMP NOT NULL DEFAULT date_trunc('second', NOW()::TIMESTAMP)
-);
-
-CREATE TABLE log (
-    id SERIAL PRIMARY KEY,
-    date TIMESTAMP NOT NULL DEFAULT date_trunc('second', NOW()::TIMESTAMP),
-    user_id INTEGER,
-    action TEXT
-);
-
 CREATE TABLE votes (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users,
