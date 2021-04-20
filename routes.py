@@ -1,7 +1,6 @@
 from app import app
 from flask import render_template, request, session, redirect, url_for
 from db import db
-from datetime import datetime
 import random
 
 import index as index_functions
@@ -11,6 +10,9 @@ import create as create_form
 import login as login_form
 import register as register_form
 import edit as edit_form
+import profile as profile_functions
+import remove_profile as remove_profile_functions
+import vote as vote_functions
 
 @app.route("/", methods=["GET", "POST"])
 def index():    
@@ -180,24 +182,15 @@ def logout():
 def profile(username):
     result = []
     if session.get("user_id", None) != None and session["username"] == username:
-        sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes, published " \
-        "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
-        "WHERE visible=TRUE AND creator_id=:creator_id " \
-        "ORDER BY date DESC"
-        result = db.session.execute(sql, {"creator_id":session["user_id"]}).fetchall()
+        result = profile_functions.get_users_own_quizzes()
         return render_template("profile.html", quizzes=result, can_remove=True, username=username)
     else:
-        sql = "SELECT id FROM users WHERE username=:username AND removed=FALSE"
-        user_id = db.session.execute(sql, {"username":username}).fetchone()
+        user_id = profile_functions.get_user_id()
 
         if user_id == None:
             return redirect("/")
 
-        sql = "SELECT users.username, quizzes.id, quizzes.title, quizzes.date, quizzes.upvotes, quizzes.downvotes " \
-        "FROM users INNER JOIN quizzes ON users.id = quizzes.creator_id " \
-        "WHERE visible=TRUE AND published = TRUE AND creator_id=:creator_id " \
-        "ORDER BY date DESC"
-        result = db.session.execute(sql, {"creator_id":user_id[0]}).fetchall()
+        result = profile_functions.get_other_users_quizzes(user_id[0])
 
     return render_template("profile.html", quizzes=result, username=username)
 
@@ -205,12 +198,7 @@ def profile(username):
 def remove_profile():
     if session.get("user_id", None) == None:
         return redirect("/")
-    
-    sql = "UPDATE users SET removed=TRUE WHERE id=:user_id"
-    db.session.execute(sql, {"user_id":session["user_id"]})
-    db.session.commit()
-
-    session.clear()
+    remove_profile_functions.remove_profile()
     return redirect("/")
 
 @app.route("/vote", methods=["POST"])
@@ -223,14 +211,11 @@ def vote():
         liked = True
     
     # Check if there is an answer already
-    sql = "SELECT COUNT(*) FROM votes WHERE user_id=:user_id AND quiz_id=:quiz_id"
-    has_voted = db.session.execute(sql, {"user_id":session["user_id"], "quiz_id":session["quiz_id"]}).fetchone()[0]
+    has_voted = vote_functions.has_voted()
 
     if has_voted:
-        sql = "UPDATE votes SET liked=:liked WHERE user_id=:user_id AND quiz_id=:quiz_id"
+        vote_functions.change_vote(liked)
     else:
-        sql = "INSERT INTO votes (user_id, quiz_id, liked) VALUES(:user_id, :quiz_id, :liked)"
-    db.session.execute(sql, {"quiz_id":session["quiz_id"], "user_id":session["user_id"], "liked":liked})
-    db.session.commit()
+        vote_functions.add_vote(liked)
     
     return redirect("/")
