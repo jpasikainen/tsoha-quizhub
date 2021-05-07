@@ -1,13 +1,13 @@
 # Quizhub
 Database project built with Flask and PostgreSQL for [hy-tsoha](https://hy-tsoha.github.io/materiaali/index).
 
-Deployed to heroku at https://tsoha-quizhub.herokuapp.com/ . Login by pressing "Login/Register" button at top right corner. Use the existing accounts marked belowe or create a new one. After logging in you are redirected to the main page and can now play the quizzes or create one yourself.
+Deployed to heroku at https://tsoha-quizhub.herokuapp.com/ . Login by pressing "Login/Register" button at top right corner. Use the existing accounts marked below or create a new one. After logging in you are redirected to the main page and can now play the quizzes or create one yourself.
 
 When entering a quiz, click one of the options to progress. After you have gone through all the questions, you will see the results.
 
-When creating a new quiz, input a title, a questions, and at least one answer. Either add a new question and fill in the fields or press "Publish". Publishing a makes it visible to all the users.
+When creating a new quiz, input a quiz title, questions, and at least one answer for each question. The last question can be removed by pressing "Remove Last Question". After you're finished, press "Publish". Publishing a makes it visible to all the users.
 
-By clicking on your name, you enter a profile view. There you can delete your account, remove a quiz, or edit one. Deleting the account doesn't remove quizzes.
+By clicking on your name, you enter a profile view. There you can delete your account, remove a quiz, or edit one. Deleting the account doesn't remove quizzes, but hides them. The quizzes can still be accessed via links.
 
 Existing accounts:
 | username | password | admin |
@@ -15,69 +15,17 @@ Existing accounts:
 | user | password | False |
 | admin | password | True |
 
-The site is protected from SQL-injection, XSS and CSRF vulnerabilities. SQL queries take variables as parameters. XSS is taken care of by Flask's render_template and FlaskWTF does CSRF checking with validate_on_submit().
-
 ## Description
 - Generic social media like feed where posts are quizzes
 - A quiz consists of multiple questions and answers to choose from
-- After the quiz is over, the user can comment, rate the quiz, and is rewarded points based on their speed and accuracy
+- After the quiz is over, the user can rate the quiz and view global statistics for it
 - All the users can create and take part in quizzes
-- Admins can remove quizzes, users, and comments
+- Admins can remove quizzes
 
-## Views
-**Bolded** tasks are main features.
+## Security
 
-### Feed (index.html)
-- [x] **Display quizzes in creation order**
-- [x] **Open the quiz on click**
-- [x] **Create a quiz button**
-- [ ] Add sorting
-- [ ] Add search
+The site is protected from SQL-injection, XSS and CSRF vulnerabilities. SQL queries take variables as parameters. XSS is taken care of by Flask's `render_template` and FlaskWTF does CSRF checking with `validate_on_submit()`. Account name is limited to `^([a-zA-Z0-9åäö _!.,+-]+)$` Regex, and title and question fields are limited to `^([a-zA-Z0-9åäö$€'" _!.,+-]+)$`.
 
-### Quiz (quiz/\<int>.html)
-- [x] **Opens to a new page**
-- [x] **Display a question and multiple choices**
-- [x] **Reward points after completion**
-- [x] **Rate the quiz**
-- [x] **An admin can remove the quiz**
-- [x] Correct/Incorrect answers per question (statistics)
-- [ ] Add comments
+## Design
 
-### Create user (register.html)
-- [x] **Form with username and password fields**
-- [x] **On submit check if the username is taken**
-- [x] **Hash the password before saving**
-
-### Login (login.html)
-- [x] **Form with username and password fields**
-- [x] **On submit check if the password hash is correct and login**
-
-### Create quiz (create.html)
-- [x] **Quiz name**
-- [x] **Add question and up to 4 answers choices**
-- [x] **Ability add multiple questions**
-- [ ] Save draft
-- [ ] Add tags
-- [ ] Human verification before publishing
-
-### Profile page (profile/\<int>.html)
-- [x] **Remove a quiz**
-- [x] **Remove account**
-- [x] **Edit a quiz**
-- [ ] Change password
-
-![](documentation/images/index.png)
-
-![](documentation/images/create-quiz.png)
-
-![](documentation/images/take-quiz.png)
-
-![](documentation/images/quiz-stats.png)
-
-## Database
-
-[Schema](https://github.com/jpasikainen/tsoha-quizhub/blob/master/schema.sql)
-
-- [x] Add bool published for quizzes 
-
-![](documentation/images/database_chart.png)
+The [Design Document](/documentation/design.md) contains the original plan for the project.
