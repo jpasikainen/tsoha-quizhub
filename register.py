@@ -7,7 +7,7 @@ from db import db
 
 class RegisterForm(FlaskForm):
     username = TextField("Username:", validators=[DataRequired(), Length(min=3, max=15), \
-        Regexp("^([a-zA-Z0-9 _!.,-]+)$", message="Only alphanumeric and !_., characters are allowed")])
+        Regexp("^([a-zA-Z0-9åäö _!.,+-]+)$", message="Only alphanumeric and !_., characters are allowed")])
     password = PasswordField("Password:", validators=[DataRequired(), \
         EqualTo('confirm', message='Passwords must match'), Length(min=7, max=30)])
     confirm = PasswordField("Confirm", validators=[DataRequired()])

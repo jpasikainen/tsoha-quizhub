@@ -9,11 +9,13 @@ class AnswerForm(FlaskForm):
     correct = BooleanField("Correct")
 
 class QuestionForm(FlaskForm):
-    question = TextField("Question:", validators=[DataRequired(), Length(min=1, max=50), Regexp("^([a-zA-Z0-9 _!.,-]+)$", message="Only alphanumeric and !_., characters are allowed")])
+    question = TextField("Question:", validators=[DataRequired(), Length(min=1, max=50), \
+        Regexp("""^([a-zA-Z0-9åäö$€'" _!.,+-]+)$""", message="Only alphanumeric and !_., characters are allowed")])
     answers = FieldList(FormField(AnswerForm), min_entries=4)
 
 class CreateQuizForm(FlaskForm):
-    title = TextField("Quiz title:", validators=[DataRequired(), Length(min=1, max=30), Regexp("^([a-zA-Z0-9 _!.,-]+)$", message="Only alphanumeric and !_., characters are allowed")])
+    title = TextField("Quiz title:", validators=[DataRequired(), Length(min=1, max=30), \
+        Regexp("""^([a-zA-Z0-9åäö$€'" _!.,+-]+)$""", message="Only alphanumeric and !_., characters are allowed")])
     questions = FieldList(FormField(QuestionForm))
     submit_button = SubmitField("Publish")
     add_question_button = SubmitField("Add New Question")

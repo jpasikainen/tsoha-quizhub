@@ -3,7 +3,6 @@ from flask_wtf import FlaskForm
 from wtforms import TextField, BooleanField, FieldList, FormField, SubmitField
 from wtforms.validators import DataRequired
 from db import db
-from werkzeug.datastructures import MultiDict
 
 class AnswerForm(FlaskForm):
     answer = TextField("Answer:")
